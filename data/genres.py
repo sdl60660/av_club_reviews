@@ -1,0 +1,1 @@
+genres = {'Sport', 'Comedy', 'Adventure', 'Reality-TV', 'Documentary', 'Animation', 'Thriller', 'History', 'Music', 'Mystery', 'Family', 'War', 'Short', 'Talk-Show', 'Drama', 'Biography', 'Fantasy', 'Musical', 'Romance', 'N/A', 'News', 'Western', 'Action', 'Game-Show', 'Crime', 'Horror', 'Sci-Fi'}

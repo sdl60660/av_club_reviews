@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://d3js.org/d3.v4.js"></script>
+<link rel="stylesheet" type="text/css" href="static/css/style.css">
+
+<head>
+   <h1 align="center"><u> Understanding the breakdown of agricultural production and losses using an interactive dashboard</u></h1>
+   <p align="center"> This is an application with a backend written in python (Flask) and a front end developed using <a href="https://bl.ocks.org/mbostock/1283663"> Mike Bostock's </br>
+  hierarchical chart example</a>.This application also makes use of <a href="https://github.com/andrewheekin/csv2flare.json/blob/master/csv2flare.json.py"> Andrew Heekins code</a> to convert a dataframe</br> 
+  to a nested json.For the detailed code, please visit <a href="https://github.com/kanishkan91">my github</a>.Data for this visualization hasbeen extracted from <a href="http://www.fao.org/faostat/en/#data/FBS">FAOSTAT</a><br/> 
+  Pick a year (between 2010 and 2013) and a country, to begin!</p>                                         
+</head>
+
+
+	<form method="post" onSubmit="showCountry()">
+	    <input name="Country_field" id="CountrySel"  placeholder="Enter country name" >
+	    <input type="number"  name="Year_field" placeholder="Enter Year" >
+	    <input type="submit" value="Submit Country and Year" >
+	</form>
+
+	<body>
+		<p><b>Country selected : {{CountryName}}</b></p>
+		<p><b> Year selected : {{Year}}</b> </p>
+
+  
+		<div class="left-div" id="my_dataviz" style="border: thin solid black">
+			<p>Explaination</p>
+		</div>
+
+		<div class="right-div" id="graphDiv2" style="border: thin solid black">
+			<p>Explaination</p>
+		</div>
+
+	</body>
+
+
+<script src="static/js/d3_components.js"></script>
+
+</html>
+
