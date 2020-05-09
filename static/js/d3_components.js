@@ -120,6 +120,8 @@ BarChart.prototype.wrangleData = function(fullData) {
     vis.showData = vis.fullData.show
     vis.episodes = vis.fullData.episodes;
 
+    console.log(vis.episodes);
+
     vis.sortedEpisodes = vis.episodes.sort((a, b) => (a.season_number > b.season_number) ? 1 : (a.season_number === b.season_number) ? ((a.episode_number > b.episode_number) ? 1 : -1) : -1 );
     vis.sortedEpisodes =  vis.sortedEpisodes.filter(x => x.letter_grade != null && x.letter_grade.length <= 2);
 
@@ -160,13 +162,18 @@ BarChart.prototype.updateVis = function() {
     // JOIN data with any existing elements
     vis.barChart = vis.g.selectAll("rect")
         .data(vis.sortedEpisodes, function(d) {
-            return d.chart_index
+            return d.imdb_episode_id;
         })
 
     // EXIT old elements not present in new data
     vis.barChart.exit()
         .transition()
-            .attr("height", vis.y(0))
+            .duration(350)
+            // .delay(function(d,i) {
+            //     return i*30;
+            // })
+            .attr("y", vis.y(0))
+            .attr("height", 0)
             .remove();
 
     // ENTER new elements present in the data...
@@ -177,35 +184,41 @@ BarChart.prototype.updateVis = function() {
                 .style('stroke', 'white')
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout)
-                .merge(vis.barChart)
-                    .attr("x", function(d) {
-                        return vis.x(d.chart_index);
-                    }) 
+                // .merge(vis.barChart)
+                .attr("x", function(d) {
+                    return vis.x(d.chart_index);
+                }) 
+                .attr("width", vis.x.bandwidth)
+                .attr("fill", function(d) {
+                    return vis.season_numberColor(d.season_number);
+                })
+                .attr("opacity", defaultFillOpacity)
+                .attr("class", function(d) {
+                    return "episode-bar season_number-" + d.season_number;
+                })
+                .attr("season", function(d) {
+                    return d.season_number;
+                })
+                .attr("grade", function(d) {
+                    return d.letter_grade;
+                })
+                .attr("y", vis.y(0))
+                .attr("height", 0)
+                
+                .transition()
+                    // .delay(function(d,i) {
+                    //     return 400+(i*30);
+                    // })
+                    .delay(400)
                     .attr("height", function(d) {
                         return vis.height - vis.y(translateGrade(d.letter_grade));
                     })
-                    .transition()
-                        .delay(function(d,i) {
-                            return i*30;
-                        })
-                        .duration(200)
                     .attr("y", function(d) {
                         return vis.y(translateGrade(d.letter_grade));
                     })
-                    .attr("width", vis.x.bandwidth)
-                    .attr("fill", function(d) {
-                        return vis.season_numberColor(d.season_number);
-                    })
-                    .attr("opacity", defaultFillOpacity)
-                    .attr("class", function(d) {
-                        return "episode-bar season_number-" + d.season_number;
-                    })
-                    .attr("season", function(d) {
-                        return d.season_number;
-                    })
-                    .attr("grade", function(d) {
-                        return d.letter_grade;
-                    })
+
+                    .duration(500)
+                    
 
     d3.selectAll('.season-avg-line').remove();
     d3.selectAll('.season-label').remove();

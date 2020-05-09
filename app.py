@@ -23,8 +23,18 @@ app.secret_key = '1234'
 @app.route('/')
 def homepage():
 	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
-		columns = ['show_name', 'id']
-		sql_statement = "SELECT {} FROM shows ORDER BY show_name".format(str(','.join(columns)))
+		# columns = ['show_name', 'id']
+		# sql_statement = "SELECT {} FROM shows ORDER BY show_name".format(str(','.join(columns)))
+		sql_statement = "SELECT show_name, id FROM \
+						(SELECT show_id FROM reviews LEFT JOIN  \
+						(SELECT show_id, id FROM episodes \
+	 					WHERE (episode_number IS NOT NULL AND season_number IS NOT NULL) \
+	 					GROUP BY show_id, id) \
+						AS grouped_episodes ON grouped_episodes.id=reviews.episode_id \
+						WHERE letter_grade IS NOT NULL \
+						GROUP BY show_id) non_empty_show_ids \
+						LEFT JOIN shows ON shows.id = non_empty_show_ids.show_id \
+						ORDER BY show_name"
 		cur.execute(sql_statement)
 		show_ids = cur.fetchall()
 
@@ -41,7 +51,7 @@ def get_show():
 		show_result = cur.fetchone()
 		show_result = convert_date_values(show_result)
 
-		sql_statement = "SELECT * FROM episodes LEFT JOIN reviews ON episodes.id=reviews.episode_id WHERE show_id='{}'".format(show_id)
+		sql_statement = "SELECT * FROM episodes LEFT JOIN reviews ON episodes.id=reviews.episode_id WHERE show_id='{}' AND episodes.season_number IS NOT NULL AND episodes.episode_number IS NOT NULL".format(show_id)
 		cur.execute(sql_statement)
 		episodes_result = cur.fetchall()
 
