@@ -209,7 +209,7 @@ for show, show_data in data.items():
 		if 'imdb_episode_id' in episode.keys():
 			insert_data['imdb_episode_id'] = episode['imdb_episode_id']
 
-		if 'omdb_data' in episode.keys():
+		if 'omdb_data' in episode.keys() and episode['omdb_data']:
 			insert_data = process_omdb_data(episode['omdb_data'], insert_data, episode=True)
 
 		dictionary_insert(cur, insert_data, 'episodes')

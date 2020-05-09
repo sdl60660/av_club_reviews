@@ -1,27 +1,59 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 from database import Database, CursorFromConnectionFromPool
+from psycopg2.extensions import AsIs
+
+import json
+import datetime
+
+
+def convert_date_values(db_result):
+	for key, val in db_result.items():
+		if type(val) == datetime.date:
+			db_result[key] = datetime.datetime.strftime(val, '%Y-%m-%d')
+	return db_result
+
 
 
 Database.initialize(host="localhost", port=5433, database="tv_reviews", user="samlearner", password="postgres")
 # con = Database.get_connection()
-
-"""with CursorFromConnectionFromPool() as cur:
-	cur.execute('SELECT * FROM shows LIMIT 5')
-	print(cur.fetchone())"""
-
 
 app = Flask(__name__)
 app.secret_key = '1234'
 
 @app.route('/')
 def homepage():
-	return render_template('index.html')
+	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
+		columns = ['show_name', 'id']
+		sql_statement = "SELECT {} FROM shows ORDER BY show_name".format(str(','.join(columns)))
+		cur.execute(sql_statement)
+		show_ids = cur.fetchall()
 
+	return render_template('index.html', show_ids=show_ids)
 
+@app.route('/get_show')
+def get_show():
+	show_id = request.args['show_id']
+	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
+		
+		columns = ['show_name','av_club_stub','premiere_year','end_year','imdb_votes','imdb_rating','genre','plot','poster','imdb_series_id','writer','director','year','actors','release_date']
+		sql_statement = "SELECT {} FROM shows WHERE id='{}'".format(str(','.join(columns)), show_id)
+		cur.execute(sql_statement)
+		show_result = cur.fetchone()
+		show_result = convert_date_values(show_result)
 
+		sql_statement = "SELECT * FROM episodes LEFT JOIN reviews ON episodes.id=reviews.episode_id WHERE show_id='{}'".format(show_id)
+		cur.execute(sql_statement)
+		episodes_result = cur.fetchall()
 
+		for i, result in enumerate(episodes_result):
+			episodes_result[i] = convert_date_values(result)
 
+	output_data = {
+		'show': show_result,
+		'episodes': episodes_result
+	}
 
+	return(json.dumps(output_data))
 
 
 if __name__ == "__main__":

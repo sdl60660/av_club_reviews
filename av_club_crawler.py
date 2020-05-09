@@ -1,6 +1,3 @@
-import selenium
-from selenium import webdriver
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -9,16 +6,7 @@ import json
 import re
 from pprint import pprint
 
-class AVClubCrawler():
-
-	def __init__(self):
-		chrome_options = webdriver.ChromeOptions()
-		chrome_options.add_argument('--no-sandbox')
-		chrome_options.add_argument('--headless')
-		self.driver = webdriver.Chrome(chrome_options=chrome_options)
-
-	def get_site(self, site):
-		self.driver.get(site)
+from crawler import Crawler
 
 
 def get_review_links(show):
@@ -53,7 +41,7 @@ def get_review_info(link, show):
 
 	show_stub = show.replace(' &', '').replace('/','').replace('?', '').replace(' ', '-').lower()
 
-	crawler.get_site(link)
+	crawler.get(link)
 	page_source = crawler.driver.page_source
 	soup = BeautifulSoup(page_source, 'html.parser')
 
@@ -123,15 +111,15 @@ def get_review_info(link, show):
 	}
 
 
-crawler = AVClubCrawler()
-crawler.get_site('https://www.avclub.com/c/tv-review')
+crawler = Crawler(headless=False)
+crawler.get('https://www.avclub.com/c/tv-review')
 
 show_menu = crawler.driver.find_elements_by_xpath("//*[contains(text(), 'All Categories')]")[0]
 show_menu.click()
 
 shows = [_.text for _ in crawler.driver.find_elements_by_xpath("//ul//li[@role='option']//span") if _.text != 'All Categories']
 
-# error_links = []
+error_links = []
 output_data = {'data': {}, 'meta': {'date_retrieved': str(datetime.datetime.now())}}
 
 for show in shows:

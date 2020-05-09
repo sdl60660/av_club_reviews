@@ -8,14 +8,11 @@ import aiohttp
 
 import urllib.parse
 
+from utils import page_generator
+
 
 start = time.time()
 API_KEY = "3a976421"
-
-
-def page_generator(start, stop):
-    for page in range(start, stop+1):
-        yield page
 
 
 async def fetch(session, url):
@@ -25,16 +22,6 @@ async def fetch(session, url):
     	except:
     		print(r)
     		return None
-
-
-async def get_records(module, page_num):
-    more_records = True
-
-    async with aiohttp.ClientSession() as session:
-        url = 'https://www.zohoapis.com/crm/v2/{}?page={}&per_page=200&fields=First_Name,Last_Name,Cohort_Location_Picklist_New,Course_Selection_Picklist_New,Stakeholder_Type,LinkedIn,Name,Graduation_Date'.format(module, page_num)
-        data = await fetch(session, url)
-        print('RESPONSE COUNT: ' + str(page_num))
-        return {**process_data(data), **{'page_num': page_num}}
 
 
 async def search_for_show(show_title):
@@ -67,14 +54,7 @@ async def find_show_by_id(show_id):
 	async with aiohttp.ClientSession() as session:
 		return await fetch(session, url)
 
-
-with open('data/enriched_av_data.json', 'r') as f:
-	data = json.load(f)
-
 # http://www.omdbapi.com/?i=123&type=series OR type=episode
-# http://www.omdbapi.com/?t=Breaking+Bad&apikey={}
-# http://www.omdbapi.com/?s=Breaking+Bad&page=1
-# http://www.omdbapi.com/?i=123
 
 async def get_show_data(show_name, episodes):
 	# print(show_name)
@@ -102,6 +82,8 @@ async def get_show_data(show_name, episodes):
 
 
 async def main():
+	with open('data/enriched_av_data.json', 'r') as f:
+		data = json.load(f)
 
 	out_data = {}
 

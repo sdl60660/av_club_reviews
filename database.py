@@ -1,4 +1,5 @@
 from psycopg2 import pool
+from psycopg2.extras import RealDictCursor
 
 
 class Database:
@@ -25,13 +26,17 @@ class Database:
 
 
 class CursorFromConnectionFromPool:
-	def __init__(self):
+	def __init__(self, dict_cursor=False):
 		self.connection = None
 		self.cursor = None
+		self.dict_cursor = dict_cursor
 
 	def __enter__(self):
 		self.connection = Database.get_connection()
-		self.cursor = self.connection.cursor()
+		if self.dict_cursor:
+			self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
+		else:
+			self.cursor = self.connection.cursor()
 		return self.cursor
 
 	def __exit__(self, exc_type, exc_val, exc_tb):
