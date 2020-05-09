@@ -247,7 +247,7 @@ BarChart.prototype.updateVis = function() {
             .attr("class", "season-label")
             .attr("text-anchor", "middle")
             .attr("color", "black")
-            .attr("x", vis.linearXScale((vis.group[vis.group.length - 1].chart_index + vis.group[0].chart_index)/2))
+            .attr("x", vis.linearXScale((vis.group[vis.group.length - 1].chart_index + vis.group[0].chart_index + 1)/2))
             .attr("y", vis.y(0) + 20);
     }
 
