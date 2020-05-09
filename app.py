@@ -23,8 +23,6 @@ app.secret_key = '1234'
 @app.route('/')
 def homepage():
 	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
-		# columns = ['show_name', 'id']
-		# sql_statement = "SELECT {} FROM shows ORDER BY show_name".format(str(','.join(columns)))
 		sql_statement = "SELECT show_name, id FROM \
 						(SELECT show_id FROM reviews LEFT JOIN  \
 						(SELECT show_id, id FROM episodes \
