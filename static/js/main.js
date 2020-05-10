@@ -1,8 +1,13 @@
 
 var currentShowData;
+
 var showChartsTransitionOutDuration = 350;
 var showChartsTransitionInDuration = 500; 
 
+var defaultShow = 'Breaking Bad';
+// var barChart;
+
+$("#show-select").val(defaultShow);
 $("#show-select")
 	.on("change", function() {
 		updateShow();
@@ -22,8 +27,6 @@ function updateShow() {
 	});
 }
 
-var defaultShow = 'Breaking Bad';
-var barChart;
 
 var showId = $("#show-select").find(`:contains(${defaultShow})`).attr('id').substring(5);
 $.get( "/get_show?show_id=" + showId ).then (response => {
