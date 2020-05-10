@@ -43,9 +43,8 @@ function mouseout() {
 
 var defaultFillOpacity = 0.7;
 
-BarChart = function(_parentElement, _fullData, _dimensions, _rectClass, _seasonChart) {
+BarChart = function(_parentElement, _dimensions, _rectClass, _seasonChart) {
     this.parentElement = _parentElement;
-    this.fullData = _fullData;
     this.dimensions = _dimensions;
     this.rectClass = _rectClass;
     this.seasonChart = _seasonChart;
@@ -102,16 +101,15 @@ BarChart.prototype.initVis = function() {
         .attr("transform", "translate(-5,0)")
         .call(vis.yAxisCall);
 
-    vis.wrangleData(vis.fullData);
+    vis.wrangleData();
 }
 
 
-BarChart.prototype.wrangleData = function(fullData) {
+BarChart.prototype.wrangleData = function() {
     var vis = this;
-    vis.fullData = fullData;
 
-    vis.showData = vis.fullData.show
-    vis.episodes = vis.fullData.episodes;
+    vis.showData = currentShowData.show
+    vis.episodes = currentShowData.episodes;
 
     vis.sortedEpisodes = vis.episodes.sort((a, b) => (a.season_number > b.season_number) ? 1 : (a.season_number === b.season_number) ? ((a.episode_number > b.episode_number) ? 1 : -1) : -1 );
     vis.sortedEpisodes =  vis.sortedEpisodes.filter(x => x.letter_grade != null && x.letter_grade.length <= 2);
