@@ -1,5 +1,7 @@
 
 var currentShowData;
+var showChartsTransitionOutDuration = 350;
+var showChartsTransitionInDuration = 500; 
 
 $("#show-select")
 	.on("change", function() {
@@ -27,7 +29,7 @@ var showId = $("#show-select").find(`:contains(${defaultShow})`).attr('id').subs
 $.get( "/get_show?show_id=" + showId ).then (response => {
 	currentShowData = JSON.parse(response);
 
-	barChart = new BarChart('#show-bar-chart', [700, 0.85*700], "episode-bar", false);
+	barChart = new BarChart('#show-bar-chart', [700, 0.9*700], "episode-bar", false);
 	seasonChart = new BarChart('#season-bar-chart', [400, 0.75*400], "season-bar", true);
 
 	bubblePlot = new BubblePlot("#ratings-plot");

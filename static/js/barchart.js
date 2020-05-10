@@ -195,7 +195,7 @@ BarChart.prototype.updateVis = function() {
     // EXIT old elements not present in new data
     vis.barChart.exit()
         .transition()
-            .duration(350)
+            .duration(showChartsTransitionOutDuration)
             // .delay(function(d,i) {
             //     return i*30;
             // })
@@ -238,7 +238,7 @@ BarChart.prototype.updateVis = function() {
                 .attr("y", vis.y(0))
                 .attr("height", 0)
                 .transition()
-                    .delay(400)
+                    .delay(showChartsTransitionOutDuration + 50)
                     .attr("height", function(d) {
                         if(vis.seasonChart) {
                             return vis.height - vis.y(d.average_score);
@@ -256,7 +256,7 @@ BarChart.prototype.updateVis = function() {
                         }
                     })
 
-                    .duration(500)
+                    .duration(showChartsTransitionInDuration)
                     
 
     vis.g.selectAll('.season-label').remove();
