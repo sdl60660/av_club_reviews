@@ -5,6 +5,7 @@ var showChartsTransitionOutDuration = 350;
 var showChartsTransitionInDuration = 500; 
 
 var defaultShow = 'Breaking Bad';
+var showId = $("#show-select").find(`:contains(${defaultShow})`).attr('id').substring(5);
 // var barChart;
 
 $("#show-select").val(defaultShow);
@@ -27,13 +28,19 @@ function updateShow() {
 	});
 }
 
+var promises = [
+	d3.json("/get_show?show_id=" + showId)
+];
 
-var showId = $("#show-select").find(`:contains(${defaultShow})`).attr('id').substring(5);
-$.get( "/get_show?show_id=" + showId ).then (response => {
-	currentShowData = JSON.parse(response);
+Promise.all(promises).then(function(allData) {
+	currentShowData = allData[0];
+	// console.log(allData);
+
+	 // = JSON.parse(response);
 
 	barChart = new BarChart('#show-bar-chart', [700, 0.9*700], "episode-bar", false);
-	seasonChart = new BarChart('#season-bar-chart', [400, 0.75*400], "season-bar", true);
+	seasonChart = new BarChart('#season-bar-chart', [500, 0.75*400], "season-bar", true);
 
 	bubblePlot = new BubblePlot("#ratings-plot");
+
 });

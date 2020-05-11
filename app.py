@@ -64,5 +64,43 @@ def get_show():
 	return(json.dumps(output_data))
 
 
+@app.route('/get_directors')
+def get_directors():
+	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
+
+		sql_statement = """SELECT
+							episodes_with_reviews.director
+							, STRING_AGG(episodes_with_reviews.show_name, ',') AS "shows_directed"
+							, COUNT(episodes_with_reviews.director) AS "review_count"
+							, COUNT(DISTINCT show_id) AS "num_shows"
+							, AVG(numeric_score) AS "average_av_club"
+							, 10*AVG(imdb_rating) AS "average_imdb"
+							, AVG(numeric_score) - 10*AVG(imdb_rating) AS "rating_difference"
+						FROM
+						(
+							SELECT
+								episodes.*
+								, reviews.numeric_score
+								, shows.show_name
+							FROM episodes
+							LEFT JOIN reviews ON reviews.episode_id = episodes.id
+							RIGHT JOIN shows ON shows.id = episodes.show_id
+							WHERE reviews.numeric_score IS NOT NULL AND episodes.imdb_rating IS NOT NULL
+						) AS episodes_with_reviews
+						WHERE director != 'N/A'
+						GROUP BY director
+						HAVING COUNT(director) >= 40
+						ORDER BY AVG(numeric_score) - 10*AVG(imdb_rating) DESC;"""
+
+		cur.execute(sql_statement)
+		director_results = cur.fetchall()
+		for result in director_results:
+			result['shows_directed'] = list(set(result['shows_directed'].split(',')))
+			result['average_av_club'] = float(result['average_av_club'])
+
+		print(director_results)
+
+		return(json.dumps(director_results))
+
 if __name__ == "__main__":
     app.run(port=5453, debug=True)

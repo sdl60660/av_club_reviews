@@ -1,45 +1,4 @@
 
-function mouseover() {
-    var rectClass = this.getAttribute('class').split(' ')[0];
-
-    var val = parseFloat(this.getAttribute('grade'));
-    if(isNaN(val)) {
-        var valueLabel = this.getAttribute('grade');
-    }
-    else {
-        var valueLabel = d3.format('.1f')(100*(this.getAttribute('grade') / 11.0));
-    }  
-
-    d3.selectAll('.' + rectClass)
-        .attr("opacity", 0.4);
-    d3.select(this)
-        .attr("opacity", 0.9);
-
-    // d3.selectAll(".season-label")
-    //     .attr("opacity", 0.0);
-    d3.selectAll("#season-" + this.getAttribute("season") + "-label")
-        .attr("opacity", 1.0);
-
-    d3.select('g.' + this.getAttribute("text-group-class")).append('text')
-        .attr("x", parseFloat(this.getAttribute("x")) + (parseFloat(this.getAttribute("width"))/2))
-        .attr("y", this.getAttribute("y") - 10)
-        .attr("text-anchor", "middle")
-        .attr("class", "grade-hover-text")
-        .attr("color", "black")
-        .text(valueLabel);
-}
-
-function mouseout() {
-    var rectClass = this.getAttribute('class').split(' ')[0];
-    d3.selectAll(".grade-hover-text")
-        .remove();
-
-    d3.selectAll(".season-label")
-        .attr("opacity", 0.0);
-
-    d3.selectAll('rect')
-        .attr("opacity",defaultFillOpacity);
-}
 
 var defaultFillOpacity = 0.7;
 
@@ -61,7 +20,7 @@ BarChart.prototype.initVis = function() {
 
 
     // set the dimensions and margins of the graph
-    vis.margin = {top: 40, right: 30, bottom: 30, left: 50},
+    vis.margin = {top: 40, right: 73, bottom: 30, left: 50},
         vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right,
         vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -221,7 +180,7 @@ BarChart.prototype.updateVis = function() {
                 })
                 .attr("opacity", defaultFillOpacity)
                 .attr("class", function(d) {
-                    return `${vis.rectClass} season-` + d.season_number;
+                    return `show-grade-bar ${vis.rectClass} season-` + d.season_number;
                 })
                 .attr("season", function(d) {
                     return d.season_number;
@@ -274,8 +233,7 @@ BarChart.prototype.updateVis = function() {
         // Add season labels (default to hidden)
         vis.seasonLabel = vis.g.append("text")
             .text("Season " + vis.group[0].season_number)
-            .attr("id", "season-" + vis.group[0].season_number + "-label")
-            .attr("class", "season-label")
+            .attr("class", "season-label season-" + vis.group[0].season_number + "-label")
             .attr("text-anchor", "middle")
             .attr("color", "black")
             .attr("x", vis.linearXScale((vis.group[vis.group.length - 1].chart_index + vis.group[0].chart_index + 1)/2))
@@ -285,6 +243,107 @@ BarChart.prototype.updateVis = function() {
         if(vis.seasonChart == false) {
             vis.addSeasonAverageLine(vis.group);
         }
+    }
+
+    /*function mouseover() {
+        var rectClass = this.getAttribute('class').split(' ')[0];
+
+        var val = parseFloat(this.getAttribute('grade'));
+        if(isNaN(val)) {
+            var valueLabel = this.getAttribute('grade');
+        }
+        else {
+            var valueLabel = d3.format('.1f')(100*(this.getAttribute('grade') / 11.0));
+        }  
+
+        d3.selectAll('.' + rectClass)
+            .attr("opacity", 0.4);
+        d3.select(this)
+            .attr("opacity", 0.9);
+
+        // d3.selectAll(".season-label")
+        //     .attr("opacity", 0.0);
+        d3.selectAll(".season-" + this.getAttribute("season") + "-label")
+            .attr("opacity", 1.0);
+
+        d3.select('g.' + this.getAttribute("text-group-class")).append('text')
+            .attr("x", parseFloat(this.getAttribute("x")) + (parseFloat(this.getAttribute("width"))/2))
+            .attr("y", this.getAttribute("y") - 10)
+            .attr("text-anchor", "middle")
+            .attr("class", "grade-hover-text")
+            .attr("color", "black")
+            .text(valueLabel);
+
+        d3.selectAll("rect.show-grade-bar")
+            .attr("opacity", 0.4);
+        d3.selectAll("circle.rating-plot")
+            .attr("opacity", 0.4);
+
+        // var seasonNumber = this.getAttribute("season");
+        // d3.selectAll(`rect.season-${seasonNumber}`)
+        //     .attr("opacity", 0.9);
+        // d3.selectAll(`season${seasonNumber}-rating-plot`)
+        //     .attr("opacity", 0.9);
+    }
+
+    function mouseout() {
+        var rectClass = this.getAttribute('class').split(' ')[0];
+        d3.selectAll(".grade-hover-text")
+            .remove();
+
+        d3.selectAll(".season-label")
+            .attr("opacity", 0.0);
+
+        d3.selectAll('rect')
+            .attr("opacity",defaultFillOpacity);
+
+        d3.selectAll("rect.show-grade-bar")
+            .attr("opacity", vis.defaultOpacity);
+        // d3.selectAll("circle.rating-plot")
+        //     .attr("opacity", vis.defaultOpacity);
+    }*/
+
+    function mouseover() {
+        var rectClass = this.getAttribute('class').split(' ')[0];
+
+        var val = parseFloat(this.getAttribute('grade'));
+        if(isNaN(val)) {
+            var valueLabel = this.getAttribute('grade');
+        }
+        else {
+            var valueLabel = d3.format('.1f')(100*(this.getAttribute('grade') / 11.0));
+        }  
+
+        d3.selectAll('.' + rectClass)
+            .attr("opacity", 0.4);
+        d3.select(this)
+            .attr("opacity", 0.9);
+
+        // d3.selectAll(".season-label")
+        //     .attr("opacity", 0.0);
+        d3.selectAll(".season-" + this.getAttribute("season") + "-label")
+            .attr("opacity", 1.0);
+
+        d3.select('g.' + this.getAttribute("text-group-class")).append('text')
+            .attr("x", parseFloat(this.getAttribute("x")) + (parseFloat(this.getAttribute("width"))/2))
+            .attr("y", this.getAttribute("y") - 10)
+            .attr("text-anchor", "middle")
+            .attr("class", "grade-hover-text")
+            .attr("color", "black")
+            .text(valueLabel);
+        
+    }
+
+    function mouseout() {
+        var rectClass = this.getAttribute('class').split(' ')[0];
+        d3.selectAll(".grade-hover-text")
+            .remove();
+
+        d3.selectAll(".season-label")
+            .attr("opacity", 0.0);
+
+        d3.selectAll('rect')
+            .attr("opacity",defaultFillOpacity);
     }
 }
 
