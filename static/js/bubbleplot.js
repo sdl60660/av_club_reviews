@@ -145,6 +145,7 @@ BubblePlot.prototype.updateVis = function() {
     var vis = this;
 
     vis.defaultOpacity = 0.7;
+    vis.chartData.sort((a, b) => (a.reviewed_episode_count < b.reviewed_episode_count) ? 1 : -1)
 
     // JOIN data with any existing elements
     vis.circles = vis.g.selectAll("circle")
@@ -152,9 +153,7 @@ BubblePlot.prototype.updateVis = function() {
             return d.unique_id;
         })
 
-
     // EXIT old elements not present in new data
-    // Maybe change this to shrink all circles to radius=0 and have them enter by starting at radius=0
     vis.circles
         .exit()
             .transition()
