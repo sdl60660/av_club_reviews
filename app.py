@@ -71,10 +71,10 @@ def get_directors():
 		sql_statement = """SELECT
 							episodes_with_reviews.director
 							, STRING_AGG(episodes_with_reviews.show_name, ',') AS "shows_directed"
-							, COUNT(episodes_with_reviews.director) AS "review_count"
+							, COUNT(episodes_with_reviews.director) AS "reviewed_episode_count"
 							, COUNT(DISTINCT show_id) AS "num_shows"
-							, AVG(numeric_score) AS "average_av_club"
-							, 10*AVG(imdb_rating) AS "average_imdb"
+							, AVG(numeric_score) AS "average_av_rating"
+							, 10*AVG(imdb_rating) AS "average_imdb_rating"
 							, AVG(numeric_score) - 10*AVG(imdb_rating) AS "rating_difference"
 						FROM
 						(
@@ -89,16 +89,16 @@ def get_directors():
 						) AS episodes_with_reviews
 						WHERE director != 'N/A'
 						GROUP BY director
-						HAVING COUNT(director) >= 40
+						HAVING COUNT(director) >= 50
 						ORDER BY AVG(numeric_score) - 10*AVG(imdb_rating) DESC;"""
 
 		cur.execute(sql_statement)
 		director_results = cur.fetchall()
 		for result in director_results:
 			result['shows_directed'] = list(set(result['shows_directed'].split(',')))
-			result['average_av_club'] = float(result['average_av_club'])
-
-		print(director_results)
+			result['average_av_rating'] = float(result['average_av_rating'])
+			result['category_value'] = result['director']
+			result['unique_id'] = result['director']
 
 		return(json.dumps(director_results))
 

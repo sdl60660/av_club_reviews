@@ -1,5 +1,6 @@
 
 var currentShowData;
+var directorData;
 
 var showChartsTransitionOutDuration = 350;
 var showChartsTransitionInDuration = 500; 
@@ -24,23 +25,25 @@ function updateShow() {
 		barChart.wrangleData();
 		seasonChart.wrangleData();
 
-		bubblePlot.wrangleData();
+		bubblePlot.wrangleData(currentShowData.episodes);
 	});
 }
 
 var promises = [
-	d3.json("/get_show?show_id=" + showId)
+	d3.json("/get_show?show_id=" + showId),
+	d3.json("/get_directors")
 ];
 
 Promise.all(promises).then(function(allData) {
 	currentShowData = allData[0];
-	// console.log(allData);
+	directorData = allData[1];
 
-	 // = JSON.parse(response);
+	console.log(directorData);
 
 	barChart = new BarChart('#show-bar-chart', [700, 0.9*700], "episode-bar", false);
 	seasonChart = new BarChart('#season-bar-chart', [500, 0.75*400], "season-bar", true);
 
-	bubblePlot = new BubblePlot("#ratings-plot");
+	bubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
+	bubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600], true);
 
 });

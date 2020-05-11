@@ -5,8 +5,11 @@
 // 4. Add a small legend for understanding bubble size DONE
 // 4. Add shaded quarter circles in corners with labels OR arrows coming out of dashed diagnonal line to describe significance of X/Y relationship
 
-BubblePlot = function(_parentElement) {
+BubblePlot = function(_parentElement, _chartData, _dimensions, _summarizedData) {
     this.parentElement = _parentElement;
+    this.chartData = _chartData;
+    this.dimensions = _dimensions;
+    this.summarizedData = _summarizedData;
 
     this.initVis();
 }
@@ -17,8 +20,8 @@ BubblePlot.prototype.initVis = function() {
 
     // set the dimensions and margins of the graph
     vis.margin = {top: 30, right: 73, bottom: 40, left: 50};
-    vis.width = 500 - vis.margin.left - vis.margin.right,
-    vis.height = 330 - vis.margin.top - vis.margin.bottom;
+    vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right,
+    vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
     // append the svg object to the body of the page
     vis.svg = d3.select(vis.parentElement)
@@ -54,7 +57,7 @@ BubblePlot.prototype.initVis = function() {
 
     // Add a scale for bubble size
     vis.z = d3.scaleLinear()
-        .domain([ 1, 25 ])
+        .domain([ 1, 200 ])
         .range([ 3, 20 ]);
 
     vis.seasonColor = d3.scaleOrdinal()
@@ -88,46 +91,53 @@ BubblePlot.prototype.initVis = function() {
         .text("Avg. AV Club Review")
 
     vis.attachCircleSizeLegend();
-    // vis.addBackgroundColoring();
-    vis.wrangleData();
+    vis.addBackgroundColoring();
+    vis.wrangleData(vis.chartData);
 }
 
 
-BubblePlot.prototype.wrangleData = function() {
+BubblePlot.prototype.wrangleData = function(_chartData) {
     var vis = this;
+    vis.chartData = _chartData;
 
-    vis.seasonsList = currentShowData.episodes.map(function(d) {
-            return d.season_number;
-        }).filter(onlyUnique);
+    if(vis.summarizedData == true) {
+        vis.updateVis();
+    }
+    else {
 
-    vis.seasonData = [];
-    vis.seasonsList.forEach(function(seasonNumber) {
-        var seasonGroup = currentShowData.episodes.filter(d => d.season_number == seasonNumber && d.imdb_rating != null && d.letter_grade != null);
+        vis.seasonsList = vis.chartData.map(function(d) {
+                return d.season_number;
+            }).filter(onlyUnique);
 
-        var avSum = 0;
-        var imdbSum = 0;
-        seasonGroup.forEach(function(d) {
-            avSum += translateGrade(d.letter_grade);
-            imdbSum += d.imdb_rating;
+        vis.seasonData = [];
+        vis.seasonsList.forEach(function(seasonNumber) {
+            var seasonGroup = vis.chartData.filter(d => d.season_number == seasonNumber && d.imdb_rating != null && d.letter_grade != null);
+
+            var avSum = 0;
+            var imdbSum = 0;
+            seasonGroup.forEach(function(d) {
+                avSum += translateGrade(d.letter_grade);
+                imdbSum += d.imdb_rating;
+            })
+
+            var average_av = 100*(d3.format(".1f")(1.0*avSum / seasonGroup.length)/11)
+            var average_imdb = 10*d3.format(".1f")(1.0*imdbSum / seasonGroup.length)
+
+            if(average_av > 0 && average_imdb > 0) {
+                // console.log(seasonGroup);
+                vis.seasonData.push({
+                    'category_value': seasonNumber,
+                    'reviewed_episode_count': seasonGroup.length,
+                    'average_av_rating': average_av,
+                    'average_imdb_rating': average_imdb,
+                    'unique_id': seasonGroup[0].show_id + '-' + seasonGroup[0].season_number
+                }
+            )}
         })
 
-        var average_av = 100*(d3.format(".1f")(1.0*avSum / seasonGroup.length)/11)
-        var average_imdb = 10*d3.format(".1f")(1.0*imdbSum / seasonGroup.length)
-
-        if(average_av > 0 && average_imdb > 0) {
-            // console.log(seasonGroup);
-            vis.seasonData.push({
-                'season_number': seasonNumber,
-                'reviewed_episode_count': seasonGroup.length,
-                'average_av_rating': average_av,
-                'average_imdb_rating': average_imdb,
-                'unique_id': seasonGroup[0].show_id + '-' + seasonGroup[0].season_number
-            }
-        )}
-    })
-
-    vis.chartData = vis.seasonData;
-    vis.updateVis();
+        vis.chartData = vis.seasonData;
+        vis.updateVis();
+    }
 }
 
 
@@ -160,9 +170,9 @@ BubblePlot.prototype.updateVis = function() {
             .attr("stroke", "black")
             .attr("cy", function (d) { return vis.y(d.average_av_rating); } )
             .attr("cx", function (d) { return vis.x(d.average_imdb_rating); } )
-            .attr("season", function(d) { return d.season_number; })
-            .attr("class", function(d) { return `season${d.season_number}-rating-plot rating-plot`; })
-            .style("fill", function(d) { return vis.seasonColor(d.season_number); } )
+            .attr("season", function(d) { return `${d.category_value}`.replace(/./g, ''); })
+            .attr("class", function(d) { return `season-${d.category_value}-rating-plot rating-plot`.replace(/./g, ''); })
+            .style("fill", function(d) { return vis.seasonColor(d.category_value); } )
             .on("mouseover", mouseover)
             .on("mouseout", mouseout)
             .transition()
@@ -304,7 +314,7 @@ BubblePlot.prototype.addBackgroundColoring = function() {
         .attr("fill-opacity", 0.25);
 
     vis.g.append("text")
-        .attr("x", vis.width)
+        .attr("x", vis.width - 15)
         .attr("y", vis.height - 20)
         .attr("text-anchor", "end")
         .text("AV Club Rates Lower Relative to IMDB Rating")
