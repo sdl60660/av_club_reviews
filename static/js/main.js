@@ -5,9 +5,19 @@ var directorData;
 var showChartsTransitionOutDuration = 350;
 var showChartsTransitionInDuration = 500; 
 
+var episodeThreshold = 8;
+
+var defaultGenre = 'comedy';
 var defaultShow = 'Breaking Bad';
+
 var showId = $("#show-select").find(`:contains(${defaultShow})`).attr('id').substring(5);
 // var barChart;
+
+$("#genre-select").val(defaultGenre);
+$("#genre-select")
+	.on("change", function() {
+		updateGenre();
+	})
 
 $("#show-select").val(defaultShow);
 $("#show-select")
@@ -18,32 +28,51 @@ $("#show-select")
 
 function updateShow() {
 	var showId = $("#show-select").find('option:selected').attr('id').substring(5);
-	$.get( "/get_show?show_id=" + showId ).then (response => {
+	$.get( "/get_show?show_id=" + showId ).then( response => {
 		// Update chart here once that code has been adapted to be object oriented
 		currentShowData = JSON.parse(response);
 
 		barChart.wrangleData();
 		seasonChart.wrangleData();
 
-		bubblePlot.wrangleData(currentShowData.episodes);
+		seasonBubblePlot.wrangleData(currentShowData.episodes);
 	});
+}
+
+function updateGenre() {
+	var newGenre = $("#genre-select").val();
+
+	$.get("/get_genre?genre_name=" + newGenre).then( response => {
+		currentGenreData= JSON.parse(response);
+		var genreShowData = currentGenreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
+
+		genreShowBubblePlot.wrangleData(genreShowData);
+	})
 }
 
 var promises = [
 	d3.json("/get_show?show_id=" + showId),
-	d3.json("/get_directors")
+	d3.json("/get_directors"),
+	d3.json("/get_genre?genre_name=" + defaultGenre),
+	d3.json("/get_genres")
 ];
 
 Promise.all(promises).then(function(allData) {
 	currentShowData = allData[0];
 	directorData = allData[1];
+	genreData = allData[2];
+	genreMetaData = allData[3];
 
-	console.log(directorData);
+	var genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
+	console.log(genreShowData);
 
-	barChart = new BarChart('#show-bar-chart', [700, 0.9*700], "episode-bar", false);
+	barChart = new BarChart('#show-bar-chart', [625, 0.9*700], "episode-bar", false);
 	seasonChart = new BarChart('#season-bar-chart', [500, 0.75*400], "season-bar", true);
+	seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
-	bubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
-	bubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600], true);
+	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,600], true)
+	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [800,500], true);
+	
+	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600], true);
 
 });

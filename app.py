@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify
 from database import Database, CursorFromConnectionFromPool
 from psycopg2.extensions import AsIs
 
+from data.genres import genres
+
 import json
 import datetime
 
@@ -13,6 +15,16 @@ def convert_date_values(db_result):
 	return db_result
 
 
+def create_genre_summary_data(genre, genre_results):
+	return {
+		'genre': genre,
+		'reviewed_episode_count': sum([x['reviewed_episode_count'] for x in genre_results]),
+		'average_av_rating': sum([x['reviewed_episode_count']*x['average_av_rating'] for x in genre_results]) / sum([x['reviewed_episode_count'] for x in genre_results]),
+		'average_imdb_rating': sum([x['reviewed_episode_count']*x['average_imdb_rating'] for x in genre_results]) / sum([x['reviewed_episode_count'] for x in genre_results]),
+		'category_value': genre,
+		'unique_id': genre
+	}
+
 
 Database.initialize(host="localhost", port=5433, database="tv_reviews", user="samlearner", password="postgres")
 # con = Database.get_connection()
@@ -23,20 +35,22 @@ app.secret_key = '1234'
 @app.route('/')
 def homepage():
 	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
-		sql_statement = "SELECT show_name, id FROM \
-						(SELECT show_id FROM reviews LEFT JOIN  \
-						(SELECT show_id, id FROM episodes \
-	 					WHERE (episode_number IS NOT NULL AND season_number IS NOT NULL) \
-	 					GROUP BY show_id, id) \
-						AS grouped_episodes ON grouped_episodes.id=reviews.episode_id \
-						WHERE letter_grade IS NOT NULL \
-						GROUP BY show_id) non_empty_show_ids \
-						LEFT JOIN shows ON shows.id = non_empty_show_ids.show_id \
-						ORDER BY show_name"
+		sql_statement = """SELECT show_name, id FROM
+						(SELECT show_id FROM reviews LEFT JOIN
+						(SELECT show_id, id FROM episodes
+	 					WHERE (episode_number IS NOT NULL AND season_number IS NOT NULL)
+	 					GROUP BY show_id, id)
+						AS grouped_episodes ON grouped_episodes.id=reviews.episode_id
+						WHERE letter_grade IS NOT NULL
+						GROUP BY show_id) non_empty_show_ids
+						LEFT JOIN shows ON shows.id = non_empty_show_ids.show_id
+						ORDER BY show_name"""
 		cur.execute(sql_statement)
 		show_ids = cur.fetchall()
 
-	return render_template('index.html', show_ids=show_ids)
+	genre_list = sorted([x for x in genres if x != 'N/A'])
+
+	return render_template('index.html', show_ids=show_ids, genre_names=genre_list)
 
 @app.route('/get_show')
 def get_show():
@@ -89,7 +103,7 @@ def get_directors():
 						) AS episodes_with_reviews
 						WHERE director != 'N/A'
 						GROUP BY director
-						HAVING COUNT(director) >= 50
+						HAVING COUNT(director) >= 25 AND COUNT(DISTINCT show_id) >= 2
 						ORDER BY AVG(numeric_score) - 10*AVG(imdb_rating) DESC;"""
 
 		cur.execute(sql_statement)
@@ -101,6 +115,136 @@ def get_directors():
 			result['unique_id'] = result['director']
 
 		return(json.dumps(director_results))
+
+
+@app.route('/genre_list')
+def get_genre_list():
+	return_genres = sorted([x for x in genres if x != 'N/A'])
+	return(json.dumps(return_genres))
+
+@app.route('/get_genre')
+def get_genre():
+	genre = request.args['genre_name']
+
+	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
+		genre = genre.lower().replace('-', '_')
+
+		if genre == 'all':
+			filter_string = ''
+		else:
+			filter_string = "WHERE is_genre_{} = True".format(genre)
+
+		sql_statement = """
+		SELECT
+			genre_shows.*
+			, shows.genre AS "all_genres"
+		FROM
+			(SELECT
+				show_name
+				, COUNT(episodes_with_reviews.show_name) AS "reviewed_episode_count"
+				, AVG(numeric_score) AS "average_av_rating"
+				, 10*AVG(imdb_rating) AS "average_imdb_rating"
+				, AVG(numeric_score) - 10*AVG(imdb_rating) AS "rating_difference"
+				, '{genre_column}' AS "genre"
+			FROM 
+			(
+				SELECT
+					episodes.*
+					, reviews.numeric_score
+					, shows.show_name
+				FROM episodes
+				LEFT JOIN reviews ON reviews.episode_id = episodes.id
+				RIGHT JOIN shows ON shows.id = episodes.show_id
+				WHERE reviews.numeric_score IS NOT NULL AND episodes.imdb_rating IS NOT NULL
+			) AS episodes_with_reviews
+			{filter_string}
+			GROUP BY show_name
+			ORDER BY AVG(numeric_score) - 10*AVG(imdb_rating) DESC) genre_shows
+		LEFT JOIN shows ON genre_shows.show_name = shows.show_name;
+		""".format(genre_column=genre, filter_string=filter_string)
+
+		cur.execute(sql_statement)
+		genre_results = cur.fetchall()
+
+		for result in genre_results:
+			result['average_av_rating'] = float(result['average_av_rating'])
+			result['category_value'] = result['show_name']
+			result['unique_id'] = result['show_name']
+
+		out_data = {
+			'show_data': genre_results,
+			'summary_data': create_genre_summary_data(genre, genre_results)
+		}
+
+		return(json.dumps(out_data))
+
+
+@app.route('/get_genres')
+def get_genres():
+	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
+
+		all_data = []
+		for genre in genres:
+			genre = genre.lower()
+			if genre == 'n/a':
+				continue
+			else:
+				genre = genre.replace('-', '_')
+
+			sql_statement = """
+			SELECT
+				show_name
+				, genre AS "all_genres"
+				, COUNT(episodes_with_reviews.show_name) AS "reviewed_episode_count"
+				, AVG(numeric_score) AS "average_av_rating"
+				, 10*AVG(imdb_rating) AS "average_imdb_rating"
+				, AVG(numeric_score) - 10*AVG(imdb_rating) AS "rating_difference"
+				, '{genre_column}' AS "genre"
+			FROM 
+			(
+				SELECT
+					episodes.*
+					, reviews.numeric_score
+					, shows.show_name
+				FROM episodes
+				LEFT JOIN reviews ON reviews.episode_id = episodes.id
+				RIGHT JOIN shows ON shows.id = episodes.show_id
+				WHERE reviews.numeric_score IS NOT NULL AND episodes.imdb_rating IS NOT NULL
+			) AS episodes_with_reviews
+			WHERE is_genre_{genre_column} = True
+			GROUP BY show_name, genre
+			ORDER BY AVG(numeric_score) - 10*AVG(imdb_rating) DESC;
+			""".format(genre_column=genre.replace('-', '_').lower())
+
+			cur.execute(sql_statement)
+			genre_results = cur.fetchall()
+
+			for result in genre_results:
+				result['average_av_rating'] = float(result['average_av_rating'])
+				result['category_value'] = result['show_name']
+				result['unique_id'] = result['show_name']
+
+			all_data.append(create_genre_summary_data(genre, genre_results))
+
+			# all_data[genre] = {
+			# 	'show_data': genre_results,
+			# 	'summary_data': create_genre_summary_data(genre, genre_results)
+			# }
+
+		# all_show_data = {}
+		# for genre, genre_data in all_data.items():
+		# 	for show in genre_data['show_data']:
+		# 		all_show_data[show['category_value']] = show
+
+		# all_results = list(all_show_data.values())
+		# all_data['all'] = {
+		# 	'show_data': all_results,
+		# 	'summary_data': create_genre_summary_data('all_genres', all_results)
+		# }
+
+		return(json.dumps(all_data))
+
+
 
 if __name__ == "__main__":
     app.run(port=5453, debug=True)

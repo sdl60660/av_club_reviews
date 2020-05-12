@@ -46,6 +46,13 @@ BubblePlot.prototype.initVis = function() {
         .call(d3.axisBottom(vis.x)
                 .tickValues([0, 20,30,40,50,60,70,80,90,100]));
 
+    vis.tip = d3.tip().attr('class', 'd3-tip')
+        .html(function(d) {
+            var text ="<span style='color:white'>" + d.category_value + "</span></br>"
+            return text;
+    })
+    vis.g.call(vis.tip);
+
     // Add Y axis
     vis.y = d3.scalePow()
         .domain([ 0, 100 ])
@@ -57,8 +64,8 @@ BubblePlot.prototype.initVis = function() {
 
     // Add a scale for bubble size
     vis.z = d3.scaleLinear()
-        .domain([ 1, 200 ])
-        .range([ 3, 20 ]);
+        .domain([ 1, 500 ])
+        .range([ 3, 10 ]);
 
     vis.seasonColor = d3.scaleOrdinal()
       .domain([ 0, 100 ])
@@ -100,11 +107,16 @@ BubblePlot.prototype.wrangleData = function(_chartData) {
     var vis = this;
     vis.chartData = _chartData;
 
-    if(vis.summarizedData == true) {
+    vis.chartData.forEach(function(d) {
+        if(d.season_number == undefined) {
+            d['season_number'] = d.category_value;
+        }
+    })
+
+    if (vis.summarizedData == true) {
         vis.updateVis();
     }
     else {
-
         vis.seasonsList = vis.chartData.map(function(d) {
                 return d.season_number;
             }).filter(onlyUnique);
@@ -166,14 +178,16 @@ BubblePlot.prototype.updateVis = function() {
         .enter()
         .append("circle")
             .attr("opacity", vis.defaultOpacity)
-            .attr("stroke", "black")
+            // .attr("stroke", "black")
             .attr("cy", function (d) { return vis.y(d.average_av_rating); } )
             .attr("cx", function (d) { return vis.x(d.average_imdb_rating); } )
             .attr("season", function(d) { return `${d.category_value}`.replace(/./g, ''); })
             .attr("class", function(d) { return `season-${d.category_value}-rating-plot rating-plot`.replace(/./g, ''); })
             .style("fill", function(d) { return vis.seasonColor(d.category_value); } )
             .on("mouseover", mouseover)
+            .on("mouseover", vis.tip.show)
             .on("mouseout", mouseout)
+            .on("mouseout", vis.tip.hide)
             .transition()
                 .delay(showChartsTransitionOutDuration + 50)
                 .duration(showChartsTransitionInDuration)
@@ -217,6 +231,17 @@ BubblePlot.prototype.updateVis = function() {
 BubblePlot.prototype.attachCircleSizeLegend = function() {
     var vis = this;
 
+    
+    /*if(vis.summarizedData == true) {
+        var allValues = vis.chartData.map(d => d.reviewed_episode_count);
+        console.log(Quartile(allValues, 10));
+        var sampleValues = [Quartile(allValues, 10),  Quartile(allValues, 50), Quartile(allValues, 90)];
+    }
+    else {
+        var sampleValues = [5, 15, 25];
+    }*/
+
+    
     var sampleValues = [5, 15, 25];
     var topSampleY;
 
