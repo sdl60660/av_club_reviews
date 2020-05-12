@@ -1,9 +1,4 @@
 
-// 1. Add diagonal dashed line DONE
-// 2. Add hover tooltip to bubbles (season, av_avg, imdb_avg, number of episodes). IDEALLY, hover here also triggers hover functions on barcharts and visa versa
-// 3. Add axis labels DONE
-// 4. Add a small legend for understanding bubble size DONE
-// 4. Add shaded quarter circles in corners with labels OR arrows coming out of dashed diagnonal line to describe significance of X/Y relationship
 
 BubblePlot = function(_parentElement, _chartData, _dimensions, _summarizedData) {
     this.parentElement = _parentElement;
@@ -48,7 +43,7 @@ BubblePlot.prototype.initVis = function() {
 
     vis.tip = d3.tip().attr('class', 'd3-tip')
         .html(function(d) {
-            var text ="<span style='color:white'>" + d.category_value + "</span></br>"
+            var text ="<span style='color:white'>" + d.category_value.replace('_', ' ') + "</span></br>"
             return text;
     })
     vis.g.call(vis.tip);
@@ -108,6 +103,9 @@ BubblePlot.prototype.wrangleData = function(_chartData) {
     vis.chartData.forEach(function(d) {
         if(d.season_number == undefined) {
             d['season_number'] = d.category_value;
+        }
+        else {
+            d['season_number'] = 'Season ' + d['season_number'];
         }
     })
 

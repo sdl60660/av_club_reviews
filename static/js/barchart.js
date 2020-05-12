@@ -65,6 +65,7 @@ BarChart.prototype.initVis = function() {
         .html(function(d) {
             var text = "<span style='color:white'><strong>Season</strong>: " + d.season_number + "</span></br>"
             text += "<span style='color:white'><strong>Episode</strong>: " + d.episode_number + "</span></br>"
+            text += "<span style='color:white'><strong>Reviewer</strong>: " + d.reviewer + "</span></br>"
             return text;
     })
     vis.g.call(vis.tip);
@@ -180,8 +181,12 @@ BarChart.prototype.updateVis = function() {
             .append("rect")
                 .style('stroke-width', '1px')
                 .style('stroke', 'white')
-                .on("mouseover", mouseover)
-                .on("mouseout", mouseout)
+                .on("mouseover", function(d,i,n) {
+                    mouseover(d, n[i]);
+                })
+                .on("mouseout", function(d,i,n) {
+                    mouseout(d, n[i]);
+                })
                 // .merge(vis.barChart)
                 .attr("x", function(d) {
                     return vis.x(d.chart_index);
@@ -257,88 +262,33 @@ BarChart.prototype.updateVis = function() {
         }
     }
 
-    /*function mouseover() {
-        var rectClass = this.getAttribute('class').split(' ')[0];
 
-        var val = parseFloat(this.getAttribute('grade'));
+    function mouseover(data, object) {
+        vis.tip.show(data);
+
+        var rectClass = object.getAttribute('class').split(' ')[0];
+
+        var val = parseFloat(object.getAttribute('grade'));
         if(isNaN(val)) {
-            var valueLabel = this.getAttribute('grade');
+            var valueLabel = object.getAttribute('grade');
         }
         else {
-            var valueLabel = d3.format('.1f')(100*(this.getAttribute('grade') / 11.0));
+            var valueLabel = d3.format('.1f')(100*(object.getAttribute('grade') / 11.0));
         }  
 
         d3.selectAll('.' + rectClass)
             .attr("opacity", 0.4);
-        d3.select(this)
+        d3.select(object)
             .attr("opacity", 0.9);
 
         // d3.selectAll(".season-label")
         //     .attr("opacity", 0.0);
-        d3.selectAll(".season-" + this.getAttribute("season") + "-label")
+        d3.selectAll(".season-" + object.getAttribute("season") + "-label")
             .attr("opacity", 1.0);
 
-        d3.select('g.' + this.getAttribute("text-group-class")).append('text')
-            .attr("x", parseFloat(this.getAttribute("x")) + (parseFloat(this.getAttribute("width"))/2))
-            .attr("y", this.getAttribute("y") - 10)
-            .attr("text-anchor", "middle")
-            .attr("class", "grade-hover-text")
-            .attr("color", "black")
-            .text(valueLabel);
-
-        d3.selectAll("rect.show-grade-bar")
-            .attr("opacity", 0.4);
-        d3.selectAll("circle.rating-plot")
-            .attr("opacity", 0.4);
-
-        // var seasonNumber = this.getAttribute("season");
-        // d3.selectAll(`rect.season-${seasonNumber}`)
-        //     .attr("opacity", 0.9);
-        // d3.selectAll(`season${seasonNumber}-rating-plot`)
-        //     .attr("opacity", 0.9);
-    }
-
-    function mouseout() {
-        var rectClass = this.getAttribute('class').split(' ')[0];
-        d3.selectAll(".grade-hover-text")
-            .remove();
-
-        d3.selectAll(".season-label")
-            .attr("opacity", 0.0);
-
-        d3.selectAll('rect')
-            .attr("opacity",defaultFillOpacity);
-
-        d3.selectAll("rect.show-grade-bar")
-            .attr("opacity", vis.defaultOpacity);
-        // d3.selectAll("circle.rating-plot")
-        //     .attr("opacity", vis.defaultOpacity);
-    }*/
-
-    function mouseover() {
-        var rectClass = this.getAttribute('class').split(' ')[0];
-
-        var val = parseFloat(this.getAttribute('grade'));
-        if(isNaN(val)) {
-            var valueLabel = this.getAttribute('grade');
-        }
-        else {
-            var valueLabel = d3.format('.1f')(100*(this.getAttribute('grade') / 11.0));
-        }  
-
-        d3.selectAll('.' + rectClass)
-            .attr("opacity", 0.4);
-        d3.select(this)
-            .attr("opacity", 0.9);
-
-        // d3.selectAll(".season-label")
-        //     .attr("opacity", 0.0);
-        d3.selectAll(".season-" + this.getAttribute("season") + "-label")
-            .attr("opacity", 1.0);
-
-        d3.select('g.' + this.getAttribute("text-group-class")).append('text')
-            .attr("x", parseFloat(this.getAttribute("x")) + (parseFloat(this.getAttribute("width"))/2))
-            .attr("y", this.getAttribute("y") - 10)
+        d3.select('g.' + object.getAttribute("text-group-class")).append('text')
+            .attr("x", parseFloat(object.getAttribute("x")) + (parseFloat(object.getAttribute("width"))/2))
+            .attr("y", object.getAttribute("y") - 10)
             .attr("text-anchor", "middle")
             .attr("class", "grade-hover-text")
             .attr("color", "black")
@@ -346,8 +296,10 @@ BarChart.prototype.updateVis = function() {
         
     }
 
-    function mouseout() {
-        var rectClass = this.getAttribute('class').split(' ')[0];
+    function mouseout(data, object) {
+        vis.tip.hide(data);
+
+        var rectClass = object.getAttribute('class').split(' ')[0];
         d3.selectAll(".grade-hover-text")
             .remove();
 
