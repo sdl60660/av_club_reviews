@@ -1,5 +1,4 @@
 
-
 var defaultFillOpacity = 0.7;
 
 BarChart = function(_parentElement, _dimensions, _rectClass, _seasonChart) {
@@ -20,7 +19,7 @@ BarChart.prototype.initVis = function() {
 
 
     // set the dimensions and margins of the graph
-    vis.margin = {top: 40, right: 73, bottom: 30, left: 50},
+    vis.margin = {top: 40, right: 73, bottom: 40, left: 50},
         vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right,
         vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -61,13 +60,18 @@ BarChart.prototype.initVis = function() {
         .call(vis.yAxisCall);
 
 
-    vis.tip = d3.tip().attr('class', 'd3-tip')
+    vis.tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .attr("transform", "translate(0, -10)")
         .html(function(d) {
             var text = "<span style='color:white'><strong>Season</strong>: " + d.season_number + "</span></br>"
             text += "<span style='color:white'><strong>Episode</strong>: " + d.episode_number + "</span></br>"
             text += "<span style='color:white'><strong>Reviewer</strong>: " + d.reviewer_name + "</span></br>"
+            text += "<span style='color:white'><strong>Grade</strong>: " + d.letter_grade + "</span></br>"
+
             return text;
     })
+
     vis.g.call(vis.tip);
 
 
@@ -151,7 +155,7 @@ BarChart.prototype.updateVis = function() {
         .scale(vis.x)
         .tickValues([]);
     vis.xAxis = vis.g.append("g")
-        .attr("transform", "translate(0," + vis.height + ")")
+        .attr("transform", "translate(0," + (vis.height + barChartBottomOffset) + ")")
             .transition()
             .call(vis.xAxisCall);
 
@@ -211,17 +215,19 @@ BarChart.prototype.updateVis = function() {
                     }
                 })
                 .attr("text-group-class", vis.parentGroupClass)
-                .attr("y", vis.y(0))
+                .attr("y", vis.y(0) + barChartBottomOffset)
                 .attr("height", 0)
                 .transition()
                     .delay(showChartsTransitionOutDuration + 50)
                     .attr("height", function(d) {
                         if(vis.seasonChart) {
-                            return vis.height - vis.y(d.average_score);
+                            var rawHeight = vis.height - vis.y(d.average_score);
                         }
                         else {
-                            return vis.height - vis.y(translateGrade(d.letter_grade));
+                            var rawHeight = vis.height - vis.y(translateGrade(d.letter_grade));
                         }
+
+                        return rawHeight + barChartBottomOffset;
                     })
                     .attr("y", function(d) {
                         if(vis.seasonChart) {
@@ -254,7 +260,7 @@ BarChart.prototype.updateVis = function() {
             .attr("text-anchor", "middle")
             .attr("color", "black")
             .attr("x", vis.linearXScale((vis.group[vis.group.length - 1].chart_index + vis.group[0].chart_index + 1)/2))
-            .attr("y", vis.y(0) + 20)
+            .attr("y", vis.y(0) + barChartBottomOffset + 20)
             .attr("opacity", 0.0);
 
         if(vis.seasonChart == false) {
@@ -268,13 +274,13 @@ BarChart.prototype.updateVis = function() {
 
         var rectClass = object.getAttribute('class').split(' ')[0];
 
-        var val = parseFloat(object.getAttribute('grade'));
-        if(isNaN(val)) {
-            var valueLabel = object.getAttribute('grade');
-        }
-        else {
-            var valueLabel = d3.format('.1f')(100*(object.getAttribute('grade') / 11.0));
-        }  
+        // var val = parseFloat(object.getAttribute('grade'));
+        // if(isNaN(val)) {
+        //     var valueLabel = object.getAttribute('grade');
+        // }
+        // else {
+        //     var valueLabel = d3.format('.1f')(100*(object.getAttribute('grade') / 11.0));
+        // }  
 
         d3.selectAll('.' + rectClass)
             .attr("opacity", 0.4);
@@ -286,13 +292,13 @@ BarChart.prototype.updateVis = function() {
         d3.selectAll(".season-" + object.getAttribute("season") + "-label")
             .attr("opacity", 1.0);
 
-        d3.select('g.' + object.getAttribute("text-group-class")).append('text')
-            .attr("x", parseFloat(object.getAttribute("x")) + (parseFloat(object.getAttribute("width"))/2))
-            .attr("y", object.getAttribute("y") - 10)
-            .attr("text-anchor", "middle")
-            .attr("class", "grade-hover-text")
-            .attr("color", "black")
-            .text(valueLabel);
+        // d3.select('g.' + object.getAttribute("text-group-class")).append('text')
+        //     .attr("x", parseFloat(object.getAttribute("x")) + (parseFloat(object.getAttribute("width"))/2))
+        //     .attr("y", object.getAttribute("y") - 10)
+        //     .attr("text-anchor", "middle")
+        //     .attr("class", "grade-hover-text")
+        //     .attr("color", "black")
+        //     .text(valueLabel);
         
     }
 
@@ -317,8 +323,8 @@ BarChart.prototype.addSeasonAverageLine = function(group) {
     vis.seasonLine = vis.g.append("line")
         .attr("x1", vis.linearXScale(vis.group[0].chart_index))
         .attr("x2", vis.linearXScale(vis.group[vis.group.length - 1].chart_index + 1))
-        .attr("y1", vis.y(vis.average))
-        .attr("y2", vis.y(vis.average))
+        .attr("y1", vis.y(vis.average) + barChartBottomOffset)
+        .attr("y2", vis.y(vis.average) + barChartBottomOffset)
         .attr("class", "season-avg-line")
         .attr("stroke", "black")
         .style("stroke-dasharray", ("3, 3"));

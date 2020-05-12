@@ -9,6 +9,9 @@ var colorPalette = ['#0F4C81', '#F5B895', '#84898c', '#7FC844',
 var showChartsTransitionOutDuration = 350;
 var showChartsTransitionInDuration = 500; 
 
+// To allow for visible F-Grade bars
+var barChartBottomOffset = 15;
+
 var episodeThreshold = 8;
 
 var defaultGenre = 'comedy';
