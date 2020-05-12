@@ -74,8 +74,8 @@ Promise.all(promises).then(function(allData) {
 	seasonChart = new BarChart('#season-bar-chart', [500, 0.75*400], "season-bar", true);
 	seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
-	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [700,500], true)
-	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [700,500], true);
+	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500], true)
+	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [600,500], true);
 	
 	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600], true);
 

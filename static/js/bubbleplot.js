@@ -19,7 +19,7 @@ BubblePlot.prototype.initVis = function() {
     var vis = this;
 
     // set the dimensions and margins of the graph
-    vis.margin = {top: 30, right: 73, bottom: 40, left: 50};
+    vis.margin = {top: 30, right: 80, bottom: 40, left: 40};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right,
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -192,34 +192,40 @@ BubblePlot.prototype.updateVis = function() {
             .attr("season", function(d) { return `${d.category_value}`.replace(/./g, ''); })
             .attr("class", function(d) { return `season-${d.category_value}-rating-plot rating-plot`.replace(/./g, ''); })
             .style("fill", function(d) { return vis.seasonColor(d.category_value); } )
-            .on("mouseover", mouseover)
-            .on("mouseover", vis.tip.show)
-            .on("mouseout", mouseout)
-            .on("mouseout", vis.tip.hide)
+            .on("mouseover", function(d, i, n) {
+                mouseover(d, n[i]);
+            })
+            .on("mouseout", function(d) {
+                mouseout(d);
+            })
             .transition()
                 .delay(showChartsTransitionOutDuration + 50)
                 .duration(showChartsTransitionInDuration)
                 .attr("r", function (d) { return vis.z(d.reviewed_episode_count); } )
 
-    function mouseover() {
+    function mouseover(data, object) {
+        vis.tip.show(data);
+
         vis.g.selectAll("circle")
             .attr("opacity", 0.4);
 
-        d3.select(this)
+        d3.select(object)
             .attr("opacity", 0.9);
 
-        d3.selectAll(".season-" + this.getAttribute("season") + "-label")
+        d3.selectAll(".season-" + object.getAttribute("season") + "-label")
             .attr("opacity", 1.0);
 
         d3.selectAll("rect.show-grade-bar")
             .attr("opacity", 0.4);
 
-        var seasonNumber = this.getAttribute("season");
+        var seasonNumber = object.getAttribute("season");
         d3.selectAll(`rect.season-${seasonNumber}`)
             .attr("opacity", 0.9);
     }
 
-    function mouseout() {
+    function mouseout(data) {
+        vis.tip.hide(data);
+
         vis.g.selectAll("circle")
             .attr("opacity", vis.defaultOpacity);
 
@@ -262,7 +268,7 @@ BubblePlot.prototype.attachCircleSizeLegend = function() {
         .attr("x", vis.width)
         .attr("y", 0)
         .attr("class", "legend-group")
-        .attr("transform", "translate(10,0)")
+        .attr("transform", "translate(6,0)")
 
     sampleValues.forEach(function(numReviews, i) {
         var radius = vis.z(numReviews);

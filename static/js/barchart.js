@@ -60,6 +60,16 @@ BarChart.prototype.initVis = function() {
         .attr("transform", "translate(-5,0)")
         .call(vis.yAxisCall);
 
+
+    vis.tip = d3.tip().attr('class', 'd3-tip')
+        .html(function(d) {
+            var text = "<span style='color:white'><strong>Season</strong>: " + d.season_number + "</span></br>"
+            text += "<span style='color:white'><strong>Episode</strong>: " + d.episode_number + "</span></br>"
+            return text;
+    })
+    vis.g.call(vis.tip);
+
+
     vis.wrangleData();
 }
 
@@ -69,6 +79,8 @@ BarChart.prototype.wrangleData = function() {
 
     vis.showData = currentShowData.show
     vis.episodes = currentShowData.episodes;
+
+    console.log(vis.episodes);
 
     vis.sortedEpisodes = vis.episodes.sort((a, b) => (a.season_number > b.season_number) ? 1 : (a.season_number === b.season_number) ? ((a.episode_number > b.episode_number) ? 1 : -1) : -1 );
     vis.sortedEpisodes =  vis.sortedEpisodes.filter(x => x.letter_grade != null && x.letter_grade.length <= 2);
