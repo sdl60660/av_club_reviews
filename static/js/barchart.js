@@ -16,7 +16,7 @@ BarChart.prototype.initVis = function() {
 
     vis.seasonColor = d3.scaleOrdinal()
       .domain([0,100])
-      .range(d3.schemePaired);
+      .range(colorPalette);
 
 
     // set the dimensions and margins of the graph

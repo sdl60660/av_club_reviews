@@ -2,6 +2,10 @@
 var currentShowData;
 var directorData;
 
+var colorPalette = ['#0F4C81', '#F5B895', '#84898c', '#7FC844',
+'#b75e41', '#990011', '#463F3A', '#759FBC', '#6A1A4C',
+'#BA9238', '#A58D7F', '#F3D5AD', '#DBDD98', '#996848'];
+
 var showChartsTransitionOutDuration = 350;
 var showChartsTransitionInDuration = 500; 
 
@@ -70,8 +74,8 @@ Promise.all(promises).then(function(allData) {
 	seasonChart = new BarChart('#season-bar-chart', [500, 0.75*400], "season-bar", true);
 	seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
-	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,600], true)
-	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [800,500], true);
+	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [700,500], true)
+	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [700,500], true);
 	
 	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600], true);
 

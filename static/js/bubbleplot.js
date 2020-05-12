@@ -63,13 +63,12 @@ BubblePlot.prototype.initVis = function() {
                 .tickValues([0, 20,30,40,50,60,70,80,90,100]));
 
     // Add a scale for bubble size
-    vis.z = d3.scaleLinear()
-        .domain([ 1, 500 ])
-        .range([ 3, 10 ]);
+    vis.z = d3.scaleLog()
+        .range([ 3, 20 ]);
 
     vis.seasonColor = d3.scaleOrdinal()
       .domain([ 0, 100 ])
-      .range(d3.schemePaired);
+      .range(colorPalette);
 
     vis.dividerLine = vis.g.append("line")
         .attr("x1", 0)
@@ -97,7 +96,6 @@ BubblePlot.prototype.initVis = function() {
         .attr("transform", "rotate(-90)")
         .text("Avg. AV Club Review")
 
-    vis.attachCircleSizeLegend();
     vis.addBackgroundColoring();
     vis.wrangleData(vis.chartData);
 }
@@ -158,6 +156,16 @@ BubblePlot.prototype.updateVis = function() {
 
     vis.defaultOpacity = 0.7;
     vis.chartData.sort((a, b) => (a.reviewed_episode_count < b.reviewed_episode_count) ? 1 : -1)
+
+    vis.z
+        .domain([
+            d3.min(vis.chartData, function(d) {
+                return d.reviewed_episode_count;
+            }),
+            Math.max(d3.max(vis.chartData, function(d) {
+                return d.reviewed_episode_count;
+            }), 30)
+        ]);
 
     // JOIN data with any existing elements
     vis.circles = vis.g.selectAll("circle")
@@ -225,29 +233,35 @@ BubblePlot.prototype.updateVis = function() {
         //     .attr("opacity", 0.9)
     }
 
+    vis.svg.select(".legend-group").remove();
+    vis.attachCircleSizeLegend();
+
 }
 
 
 BubblePlot.prototype.attachCircleSizeLegend = function() {
     var vis = this;
 
-    
-    /*if(vis.summarizedData == true) {
-        var allValues = vis.chartData.map(d => d.reviewed_episode_count);
-        console.log(Quartile(allValues, 10));
-        var sampleValues = [Quartile(allValues, 10),  Quartile(allValues, 50), Quartile(allValues, 90)];
-    }
-    else {
-        var sampleValues = [5, 15, 25];
-    }*/
+    // I'll find the inverse for these values then find the closest round number to use for the actual
+    // radius values that will be entered into the z scale later
+    var approximateRadiusValues = [ 3, 10, 15 ];
+    var sampleValues = [];
 
-    
-    var sampleValues = [5, 15, 25];
+    approximateRadiusValues.forEach(function(d) {
+            var roundedInverse = Math.round(vis.z.invert(d));
+            var numDigits = roundedInverse.toString().length;
+            var divisor = 10**(numDigits-1);
+            var roundedValue = divisor * Math.round(roundedInverse / divisor);
+
+            sampleValues.push(roundedValue);
+    })
+
     var topSampleY;
 
     vis.legendGroup = vis.svg.append("g")
         .attr("x", vis.width)
         .attr("y", 0)
+        .attr("class", "legend-group")
         .attr("transform", "translate(10,0)")
 
     sampleValues.forEach(function(numReviews, i) {
