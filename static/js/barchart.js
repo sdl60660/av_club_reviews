@@ -65,7 +65,7 @@ BarChart.prototype.initVis = function() {
         .html(function(d) {
             var text = "<span style='color:white'><strong>Season</strong>: " + d.season_number + "</span></br>"
             text += "<span style='color:white'><strong>Episode</strong>: " + d.episode_number + "</span></br>"
-            text += "<span style='color:white'><strong>Reviewer</strong>: " + d.reviewer + "</span></br>"
+            text += "<span style='color:white'><strong>Reviewer</strong>: " + d.reviewer_name + "</span></br>"
             return text;
     })
     vis.g.call(vis.tip);

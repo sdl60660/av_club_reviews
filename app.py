@@ -63,7 +63,10 @@ def get_show():
 		show_result = cur.fetchone()
 		show_result = convert_date_values(show_result)
 
-		sql_statement = "SELECT * FROM episodes LEFT JOIN reviews ON episodes.id=reviews.episode_id WHERE show_id='{}' AND episodes.season_number IS NOT NULL AND episodes.episode_number IS NOT NULL".format(show_id)
+		sql_statement = """SELECT * FROM episodes
+						LEFT JOIN reviews ON episodes.id=reviews.episode_id
+						LEFT JOIN reviewers ON reviewers.id = reviews.reviewer_id
+		 				WHERE show_id='{}' AND episodes.season_number IS NOT NULL AND episodes.episode_number IS NOT NULL""".format(show_id)
 		cur.execute(sql_statement)
 		episodes_result = cur.fetchall()
 
