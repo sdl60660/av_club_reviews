@@ -3,5 +3,7 @@ test.html
 secret_key.txt
 notes.txt
 
+bfg.jar
+
 data/local_db_options.py
 data/remote_db_options.py
