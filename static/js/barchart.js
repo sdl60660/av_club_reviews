@@ -85,7 +85,7 @@ BarChart.prototype.wrangleData = function() {
     vis.showData = currentShowData.show
     vis.episodes = currentShowData.episodes;
 
-    console.log(vis.episodes);
+    // console.log(vis.episodes);
 
     vis.sortedEpisodes = vis.episodes.sort((a, b) => (a.season_number > b.season_number) ? 1 : (a.season_number === b.season_number) ? ((a.episode_number > b.episode_number) ? 1 : -1) : -1 );
     vis.sortedEpisodes =  vis.sortedEpisodes.filter(x => x.letter_grade != null && x.letter_grade.length <= 2);
