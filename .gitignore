@@ -4,6 +4,7 @@ secret_key.txt
 notes.txt
 
 bfg.jar
+av_club_reviews*.git
 
 data/local_db_options.py
 data/remote_db_options.py
