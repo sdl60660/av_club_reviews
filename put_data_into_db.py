@@ -141,7 +141,7 @@ local_db = True
 if local_db:
 	from data.local_db_options import db_options
 else:
-	from data.remote_db_optons import db_options
+	from data.remote_db_options import db_options
 
 conn = psycopg2.connect(host=db_options['hostname'], port=db_options['port'], database=db_options['database'], user=db_options['username'], password=db_options['password'])
 cur = conn.cursor()
