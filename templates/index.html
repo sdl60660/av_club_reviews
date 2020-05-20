@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 
-<link rel="shortcut icon" type="image/jpg" href="static/images/favicon.ico"/>
-    
-
 <head>
+	<link rel="shortcut icon" type="image/jpg" href="static/images/favicon.ico"/>
 	<meta charset="utf-8">
     <meta name="description" content="">
     <title>AV Club Grades</title>
@@ -20,8 +18,6 @@
     <link rel="stylesheet" type="text/css" href="static/css/style.css">                               
 </head>
 
-
-	
 
 <body>
 
@@ -83,6 +79,7 @@
   		var showIDs = {{ show_ids | safe }};
   		var genreNames = {{ genre_names | safe }};
   		showIDs.forEach(function(show) {
+  			console.log(show);
     		$("#show-select").append(`<option class="show-option" id="show-${show.id}" value="${show.show_name}">${show.show_name}</option>`)
   			});
 

@@ -1,2 +1,7 @@
 __pycache__
 test.html
+secret_key.txt
+notes.txt
+
+data/local_db_options.py
+data/remote_db_options.py

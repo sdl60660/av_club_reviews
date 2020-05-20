@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 from database import Database, CursorFromConnectionFromPool
 from psycopg2.extensions import AsIs
+from urllib.parse import urlparse
 
 from data.genres import genres
 
 import json
 import datetime
+import os
 
 
 def convert_date_values(db_result):
@@ -26,11 +28,32 @@ def create_genre_summary_data(genre, genre_results):
 	}
 
 
-Database.initialize(host="localhost", port=5433, database="tv_reviews", user="samlearner", password="postgres")
+try:
+	# This will run on heroku deployment for heroku postgres database
+	DATABASE_URL = os.environ['DATABASE_URL']
+	result = urlparse(DATABASE_URL)
+
+	db_options = {
+		'username': result.username,
+		'password': result.password,
+		'database': result.path[1:],
+		'hostname': result.hostname,
+		'port': result.port,
+		'ssl_mode': 'require'
+	}
+
+except KeyError:
+	# This will run on local machine for local database (hidden from Github)
+	from data.local_db_options import db_options
+
+
+Database.initialize(host=db_options['hostname'], port=db_options['port'], database=db_options['database'], user=db_options['username'], password=db_options['password'], sslmode=db_options['ssl_mode'])
 # con = Database.get_connection()
 
+# Get secret key from environment, or fallback on default value (won't happen on live app)
+SECRET_KEY = os.getenv('SECRET_KEY', '1234')
 app = Flask(__name__)
-app.secret_key = '1234'
+app.secret_key = SECRET_KEY
 
 @app.route('/')
 def homepage():
@@ -46,7 +69,7 @@ def homepage():
 						LEFT JOIN shows ON shows.id = non_empty_show_ids.show_id
 						ORDER BY show_name"""
 		cur.execute(sql_statement)
-		show_ids = cur.fetchall()
+		show_ids = [{'id': x['id'], 'show_name': x['show_name']} for x in cur.fetchall()]
 
 	genre_list = sorted([x for x in genres if x != 'N/A'])
 
