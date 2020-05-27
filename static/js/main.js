@@ -73,8 +73,7 @@ Promise.all(promises).then(function(allData) {
 	var genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
 	console.log(genreShowData);
 
-	barChart = new BarChart('#show-bar-chart', [625, 0.9*700], "episode-bar", false);
-	seasonChart = new BarChart('#season-bar-chart', [500, 0.75*400], "season-bar", true);
+	barChart = new BarChart('#show-bar-chart', [625, 0.9*700]);
 	seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
 	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500], true)

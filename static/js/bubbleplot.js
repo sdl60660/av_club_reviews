@@ -104,9 +104,9 @@ BubblePlot.prototype.wrangleData = function(_chartData) {
         if(d.season_number == undefined) {
             d['season_number'] = d.category_value;
         }
-        else {
-            d['season_number'] = 'Season ' + d['season_number'];
-        }
+        // else {
+            // d['season_number'] = 'Season ' + d['season_number'];
+        // }
     })
 
     if (vis.summarizedData == true) {

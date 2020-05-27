@@ -1,11 +1,9 @@
 
 var defaultFillOpacity = 0.7;
 
-BarChart = function(_parentElement, _dimensions, _rectClass, _seasonChart) {
+BarChart = function(_parentElement, _dimensions) {
     this.parentElement = _parentElement;
     this.dimensions = _dimensions;
-    this.rectClass = _rectClass;
-    this.seasonChart = _seasonChart;
 
     this.initVis();
 }
@@ -72,8 +70,8 @@ BarChart.prototype.initVis = function() {
             return text;
     })
 
+    vis.g.append('circle').attr('id', 'tipfollowscursor')
     vis.g.call(vis.tip);
-
 
     vis.wrangleData();
 }
@@ -92,14 +90,13 @@ BarChart.prototype.wrangleData = function() {
 
     vis.lastSeason = vis.sortedEpisodes[vis.sortedEpisodes.length - 1].season_number;
 
-    if(vis.seasonChart) {
-        vis.seasonFormatting();
+
+    vis.chartData = vis.sortedEpisodes;
+    for (i=0; i<vis.chartData.length; i++) {
+        vis.chartData[i].chart_index = i;
     }
-    else {
-        vis.chartData = vis.sortedEpisodes;
-        vis.updateVis();
-    }
-    
+
+    vis.seasonFormatting();
 }
 
 BarChart.prototype.seasonFormatting = function() {
@@ -122,22 +119,17 @@ BarChart.prototype.seasonFormatting = function() {
         vis.seasonData.push({
             'season_number': seasonNumber,
             'reviewed_episodes': seasonGroup.length,
+            'start_index': seasonGroup[0].chart_index,
             'average_score': d3.format(".1f")(1.0*sum / seasonGroup.length),
             'imdb_episode_id': seasonGroup[0].show_id + '-' + seasonGroup[0].season_number
         })
     })
 
-    vis.chartData = vis.seasonData;
-    vis.updateVis();
+    vis.setScalesAxes();
 }
 
-
-BarChart.prototype.updateVis = function() {
+BarChart.prototype.setScalesAxes = function() {
     var vis = this;
-
-    for (i=0; i<vis.chartData.length; i++) {
-        vis.chartData[i].chart_index = i;
-    }
 
     vis.x.domain(vis.chartData.map(function(d) {
         return d.chart_index;
@@ -148,7 +140,6 @@ BarChart.prototype.updateVis = function() {
             return d.chart_index;
         })])
         .range([0, vis.width])
-    // .paddingInner(0.1);
 
     // Add Axes
     vis.xAxisCall = d3.axisBottom()
@@ -159,60 +150,56 @@ BarChart.prototype.updateVis = function() {
             .transition()
             .call(vis.xAxisCall);
 
+    vis.updateBars(vis.seasonData, "season");
+    vis.updateBars(vis.chartData, "episode");
+    vis.updateVis();
+}
+
+BarChart.prototype.updateBars = function(data, barUnit) {
+    var vis = this;
 
     // JOIN data with any existing elements
-    vis.barChart = vis.g.selectAll('rect')
-        .data(vis.chartData, function(d) {
+    vis.barChart = vis.g.selectAll('.' + barUnit + '-grade-bar')
+        .data(data, function(d) {
             return d.imdb_episode_id;
         })
-        // .data(vis.chartData)
-
 
     // EXIT old elements not present in new data
     vis.barChart.exit()
         .transition()
             .duration(showChartsTransitionOutDuration)
-            // .delay(function(d,i) {
-            //     return i*30;
-            // })
             .attr("y", vis.y(0))
             .attr("height", 0)
             .remove();
 
-    // ENTER new elements present in the data...
+
+    // ENTER new elements present in the data
     vis.barChart
         .enter()
             .append("rect")
                 .style('stroke-width', '1px')
                 .style('stroke', 'white')
-                .on("mouseover", function(d,i,n) {
-                    mouseover(d, n[i]);
-                })
-                .on("mouseout", function(d,i,n) {
-                    mouseout(d, n[i]);
-                })
-                // .merge(vis.barChart)
                 .attr("x", function(d) {
-                    return vis.x(d.chart_index);
+                    return barUnit == "season" ? vis.x(d.start_index) : vis.x(d.chart_index);      
                 }) 
-                .attr("width", vis.x.bandwidth)
+                .attr("width", function(d) {
+                    return barUnit == "season" ? vis.x.bandwidth()*d.reviewed_episodes : vis.x.bandwidth();
+                })
                 .attr("fill", function(d) {
                     return vis.seasonColor(d.season_number);
                 })
-                .attr("opacity", defaultFillOpacity)
+                .attr("opacity", function() {
+                    return barUnit == "season" ? defaultFillOpacity : 0;
+                })
                 .attr("class", function(d) {
-                    return `show-grade-bar ${vis.rectClass} season-` + d.season_number;
+                    var allClasses = barUnit + '-grade-bar season-' + d.season_number;
+                    if (barUnit == "episode") {
+                        allClasses += ' chart-index-' + d.chart_index;
+                    }
+                    return allClasses;
                 })
                 .attr("season", function(d) {
                     return d.season_number;
-                })
-                .attr("grade", function(d) {
-                    if(vis.seasonChart) {
-                        return d.average_score;
-                    }
-                    else {
-                        return d.letter_grade; 
-                    }
                 })
                 .attr("text-group-class", vis.parentGroupClass)
                 .attr("y", vis.y(0) + barChartBottomOffset)
@@ -220,112 +207,120 @@ BarChart.prototype.updateVis = function() {
                 .transition()
                     .delay(showChartsTransitionOutDuration + 50)
                     .attr("height", function(d) {
-                        if(vis.seasonChart) {
+                        if(barUnit == "season") {
                             var rawHeight = vis.height - vis.y(d.average_score);
                         }
                         else {
                             var rawHeight = vis.height - vis.y(translateGrade(d.letter_grade));
                         }
-
                         return rawHeight + barChartBottomOffset;
                     })
                     .attr("y", function(d) {
-                        if(vis.seasonChart) {
-                            return vis.y(d.average_score);
-                        }
-                        else {
-                            return vis.y(translateGrade(d.letter_grade));
-                        }
+                        return barUnit == "season" ? vis.y(d.average_score) : vis.y(translateGrade(d.letter_grade));
                     })
-
                     .duration(showChartsTransitionInDuration)
-                    
 
-    vis.g.selectAll('.season-label').remove();
-    vis.g.selectAll('.season-avg-line').remove();
+}
 
-    for (i=1; i<=vis.lastSeason; i++) {
+BarChart.prototype.updateVis = function() {
+    var vis = this;                
 
-        vis.group = vis.chartData.filter((episode) => episode.season_number == i);
-        if (vis.group.length == 0) {
-            continue;
-        }
-
-        vis.average = vis.group.reduce((total, next) => total + translateGrade(next.letter_grade), 0) / vis.group.length;
-
-        // Add season labels (default to hidden)
-        vis.seasonLabel = vis.g.append("text")
-            .text("Season " + vis.group[0].season_number)
-            .attr("class", "season-label season-" + vis.group[0].season_number + "-label")
-            .attr("text-anchor", "middle")
-            .attr("color", "black")
-            .attr("x", vis.linearXScale((vis.group[vis.group.length - 1].chart_index + vis.group[0].chart_index + 1)/2))
-            .attr("y", vis.y(0) + barChartBottomOffset + 20)
-            .attr("opacity", 0.0);
-
-        if(vis.seasonChart == false) {
-            vis.addSeasonAverageLine(vis.group);
-        }
-    }
-
+    // Remove existing overlay rectangles
+    vis.g.selectAll(".hover-rect").remove();
+    // Add overlay rectangles on top of visualization to trigger mouse hover actions
+    // Each one lines up with a bottom-layer episode bar.
+    vis.chartData.forEach(function(d,i,n) {
+        vis.g.append("rect")
+            .attr("class", "hover-rect season-" + d.season_number)
+            .attr("x", vis.x(d.chart_index))
+            .attr("width", vis.x.bandwidth())
+            .attr("y", 0)
+            .attr("height", vis.height + barChartBottomOffset)
+            .attr("opacity", 0)
+            .on("mouseover", function() {
+                mouseover(d, n[i]);
+            })
+            .on("mouseout", function() {
+                mouseout(d, n[i]);
+            })
+    })
 
     function mouseover(data, object) {
-        vis.tip.show(data);
 
-        var rectClass = object.getAttribute('class').split(' ')[0];
+        var target = d3.select('#tipfollowscursor')
+                    .attr('cx', d3.event.offsetX - 45)
+                    .attr('cy', d3.event.offsetY - 55)
+                    .attr("r", 0)
+                    .node();
 
-        // var val = parseFloat(object.getAttribute('grade'));
-        // if(isNaN(val)) {
-        //     var valueLabel = object.getAttribute('grade');
-        // }
-        // else {
-        //     var valueLabel = d3.format('.1f')(100*(object.getAttribute('grade') / 11.0));
-        // }  
+        vis.tip.show(data, target);
 
-        d3.selectAll('.' + rectClass)
+        d3.select(".season-grade-bar.season-" + data.season_number)
+            .attr("opacity", 0);
+
+        d3.selectAll(".episode-grade-bar.season-" + data.season_number)
             .attr("opacity", 0.4);
-        d3.select(object)
+
+        d3.selectAll(".episode-grade-bar.chart-index-" + data.chart_index)
             .attr("opacity", 0.9);
 
-        // d3.selectAll(".season-label")
-        //     .attr("opacity", 0.0);
-        d3.selectAll(".season-" + object.getAttribute("season") + "-label")
+        d3.selectAll(".season-" + data.season_number + "-label")
             .attr("opacity", 1.0);
 
-        // d3.select('g.' + object.getAttribute("text-group-class")).append('text')
-        //     .attr("x", parseFloat(object.getAttribute("x")) + (parseFloat(object.getAttribute("width"))/2))
-        //     .attr("y", object.getAttribute("y") - 10)
-        //     .attr("text-anchor", "middle")
-        //     .attr("class", "grade-hover-text")
-        //     .attr("color", "black")
-        //     .text(valueLabel);
+        d3.selectAll(".season-avg-line.season-" + data.season_number)
+            .attr("opacity", 1.0)
         
     }
 
     function mouseout(data, object) {
         vis.tip.hide(data);
+                
+        d3.select(".season-grade-bar.season-" + data.season_number)
+            .attr("opacity", defaultFillOpacity);
 
-        var rectClass = object.getAttribute('class').split(' ')[0];
-        d3.selectAll(".grade-hover-text")
-            .remove();
+        d3.selectAll(".episode-grade-bar.season-" + data.season_number)
+            .attr("opacity", 0);
 
-        d3.selectAll(".season-label")
+        d3.selectAll(".season-avg-line")
+            .attr("opacity", 0)
+    }
+
+    vis.attachSeasonLabels();
+}
+
+BarChart.prototype.attachSeasonLabels = function() {
+    var vis = this;
+
+    vis.g.selectAll('.season-label').remove();
+    vis.g.selectAll('.season-avg-line').remove();
+
+    vis.seasonData.forEach(function(d) {
+
+        // Add season labels (default to hidden)
+        vis.seasonLabel = vis.g.append("text")
+            .text("Season " + d.season_number)
+            .attr("class", "season-label season-" + d.season_number + "-label")
+            .attr("text-anchor", "middle")
+            .attr("color", "black")            
+            .attr("x", vis.linearXScale( d.start_index + d.reviewed_episodes / 2 ))
+            .attr("y", vis.y(0) + barChartBottomOffset + 20)
             .attr("opacity", 0.0);
 
-        d3.selectAll('rect')
-            .attr("opacity",defaultFillOpacity);
-    }
+        vis.addSeasonAverageLine(d);
+    });
+
 }
 
 BarChart.prototype.addSeasonAverageLine = function(group) {
     var vis = this;
 
     vis.seasonLine = vis.g.append("line")
-        .attr("x1", vis.linearXScale(vis.group[0].chart_index))
-        .attr("x2", vis.linearXScale(vis.group[vis.group.length - 1].chart_index + 1))
-        .attr("y1", vis.y(vis.average) + barChartBottomOffset)
-        .attr("y2", vis.y(vis.average) + barChartBottomOffset)
-        .attr("class", "season-avg-line")
+        .attr("x1", vis.linearXScale(group.start_index))
+        .attr("x2", vis.linearXScale(group.start_index + group.reviewed_episodes))
+        .attr("y1", vis.y(group.average_score))
+        .attr("y2", vis.y(group.average_score))
+        .attr("class", "season-avg-line season-" + group.season_number)
+        .attr("opacity", 0)
         .attr("stroke", "black")
         .style("stroke-dasharray", ("3, 3"));
 }
