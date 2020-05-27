@@ -59,7 +59,7 @@ BubblePlot.prototype.initVis = function() {
 
     // Add a scale for bubble size
     vis.z = d3.scaleLog()
-        .range([ 3, 20 ]);
+        .range([ 3, 15 ]);
 
     vis.seasonColor = d3.scaleOrdinal()
       .domain([ 0, 100 ])

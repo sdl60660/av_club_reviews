@@ -57,6 +57,14 @@ BarChart.prototype.initVis = function() {
         .attr("transform", "translate(-5,0)")
         .call(vis.yAxisCall);
 
+    vis.xAxisLabel = vis.g.append("text")
+        .attr("id", "x-axis-label")
+        .attr("x", vis.width / 2)
+        .attr("y", vis.height + 25 + barChartBottomOffset)
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .text("Season")
+
 
     vis.tip = d3.tip()
         .attr('class', 'd3-tip')
@@ -270,6 +278,9 @@ BarChart.prototype.addOverlays = function() {
 
         vis.tip.show(data, target);
 
+        d3.select("#x-axis-label")
+            .attr("opacity", 0);
+
         d3.select(".season-grade-bar.season-" + data.season_number)
             .attr("opacity", 0);
 
@@ -289,6 +300,9 @@ BarChart.prototype.addOverlays = function() {
 
     function mouseout(data, object) {
         vis.tip.hide(data);
+
+        d3.select("#x-axis-label")
+            .attr("opacity", 1);
                 
         d3.select(".season-grade-bar.season-" + data.season_number)
             .attr("opacity", defaultFillOpacity);
