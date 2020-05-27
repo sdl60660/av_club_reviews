@@ -282,7 +282,10 @@ BarChart.prototype.addOverlays = function() {
             .attr("opacity", 0);
 
         d3.selectAll(".season-avg-line")
-            .attr("opacity", 0)
+            .attr("opacity", 0);
+
+        d3.selectAll(".season-" + data.season_number + "-label")
+            .attr("opacity", 0);
     }
 
     vis.attachSeasonLabels();
