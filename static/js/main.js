@@ -40,7 +40,8 @@ function updateShow() {
 		currentShowData = JSON.parse(response);
 
 		barChart.wrangleData();
-		seasonChart.wrangleData();
+		boxPlot.wrangleData();
+		// seasonChart.wrangleData();
 
 		seasonBubblePlot.wrangleData(currentShowData.episodes);
 	});
@@ -71,10 +72,10 @@ Promise.all(promises).then(function(allData) {
 	genreMetaData = allData[3];
 
 	var genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
-	console.log(genreShowData);
 
-	barChart = new BarChart('#show-bar-chart', [625, 0.9*700]);
-	seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
+	barChart = new BarChart('#show-bar-chart', [800, 700]);
+	boxPlot = new BoxPlot('#season-box-chart', [800, 700]);
+	// seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
 	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500], true)
 	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [600,500], true);
@@ -82,3 +83,8 @@ Promise.all(promises).then(function(allData) {
 	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600], true);
 
 });
+
+
+
+
+

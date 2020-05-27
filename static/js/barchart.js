@@ -17,9 +17,9 @@ BarChart.prototype.initVis = function() {
 
 
     // set the dimensions and margins of the graph
-    vis.margin = {top: 40, right: 73, bottom: 40, left: 50},
-        vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right,
-        vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
+    vis.margin = {top: 60, right: 75, bottom: 40, left: 75};
+    vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
+    vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
     // append the svg object to the body of the page
     vis.svg = d3.select(vis.parentElement)
@@ -80,16 +80,11 @@ BarChart.prototype.initVis = function() {
 BarChart.prototype.wrangleData = function() {
     var vis = this;
 
-    vis.showData = currentShowData.show
+    vis.showData = currentShowData.show;
     vis.episodes = currentShowData.episodes;
-
-    // console.log(vis.episodes);
 
     vis.sortedEpisodes = vis.episodes.sort((a, b) => (a.season_number > b.season_number) ? 1 : (a.season_number === b.season_number) ? ((a.episode_number > b.episode_number) ? 1 : -1) : -1 );
     vis.sortedEpisodes =  vis.sortedEpisodes.filter(x => x.letter_grade != null && x.letter_grade.length <= 2);
-
-    vis.lastSeason = vis.sortedEpisodes[vis.sortedEpisodes.length - 1].season_number;
-
 
     vis.chartData = vis.sortedEpisodes;
     for (i=0; i<vis.chartData.length; i++) {
@@ -131,10 +126,18 @@ BarChart.prototype.seasonFormatting = function() {
 BarChart.prototype.setScalesAxes = function() {
     var vis = this;
 
-    vis.x.domain(vis.chartData.map(function(d) {
-        return d.chart_index;
-    }))
-    
+    var minBarSlots = 4;
+    vis.x
+        .domain(vis.chartData.map(function(d) {
+            return d.chart_index;
+        }))
+    if (vis.chartData.length < minBarSlots) {
+        vis.x.range([0, vis.width*vis.chartData.length/minBarSlots]);
+    }
+    else {
+        vis.x.range([0, vis.width]);
+    }
+
     vis.linearXScale = d3.scaleLinear()
         .domain([0, 1 + d3.max(vis.chartData, function(d) {
             return d.chart_index;
@@ -218,7 +221,7 @@ BarChart.prototype.updateBars = function(data, barUnit) {
                     .attr("y", function(d) {
                         return barUnit == "season" ? vis.y(d.average_score) : vis.y(translateGrade(d.letter_grade));
                     })
-                    .duration(showChartsTransitionInDuration)
+                    .duration(showChartsTransitionInDuration);
 
 }
 
@@ -243,13 +246,25 @@ BarChart.prototype.addOverlays = function() {
             .on("mouseout", function() {
                 mouseout(d, n[i]);
             })
+            .on("mousemove", function() {
+                mousemove(d);
+            })
     })
+
+    function mousemove(data) {
+        var target = d3.select('#tipfollowscursor')
+            .attr('cx', d3.event.offsetX - 74)
+            .attr('cy', d3.event.offsetY - 100)
+            .node();
+
+        vis.tip.show(data, target);
+    }
 
     function mouseover(data, object) {
 
         var target = d3.select('#tipfollowscursor')
-                    .attr('cx', d3.event.offsetX - 45)
-                    .attr('cy', d3.event.offsetY - 55)
+                    .attr('cx', d3.event.offsetX - 74)
+                    .attr('cy', d3.event.offsetY - 100)
                     .attr("r", 0)
                     .node();
 
