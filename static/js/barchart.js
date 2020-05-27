@@ -152,7 +152,7 @@ BarChart.prototype.setScalesAxes = function() {
 
     vis.updateBars(vis.seasonData, "season");
     vis.updateBars(vis.chartData, "episode");
-    vis.updateVis();
+    vis.addOverlays();
 }
 
 BarChart.prototype.updateBars = function(data, barUnit) {
@@ -222,7 +222,7 @@ BarChart.prototype.updateBars = function(data, barUnit) {
 
 }
 
-BarChart.prototype.updateVis = function() {
+BarChart.prototype.addOverlays = function() {
     var vis = this;                
 
     // Remove existing overlay rectangles
@@ -286,6 +286,7 @@ BarChart.prototype.updateVis = function() {
     }
 
     vis.attachSeasonLabels();
+
 }
 
 BarChart.prototype.attachSeasonLabels = function() {
