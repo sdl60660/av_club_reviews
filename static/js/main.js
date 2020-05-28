@@ -86,10 +86,10 @@ Promise.all(promises).then(function(allData) {
 	boxPlot = new BoxPlot('#season-box-chart', [900, 300]);
 	// seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
-	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500], true)
-	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [600,500], true);
+	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500])
+	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [600,500]);
 	
-	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600], true);
+	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600]);
 
 	reviewerBiasPlot = new ReviewerChart("#reviewer-bias-plot", [800, 500]);
 

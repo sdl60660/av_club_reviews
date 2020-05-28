@@ -1,10 +1,9 @@
 
 
-BubblePlot = function(_parentElement, _chartData, _dimensions, _summarizedData) {
+BubblePlot = function(_parentElement, _chartData, _dimensions) {
     this.parentElement = _parentElement;
     this.chartData = _chartData;
     this.dimensions = _dimensions;
-    this.summarizedData = _summarizedData;
 
     this.initVis();
 }
@@ -118,48 +117,10 @@ BubblePlot.prototype.wrangleData = function(_chartData) {
         if(d.season_number == undefined) {
             d['season_number'] = d.category_value;
         }
-        // else {
-            // d['season_number'] = 'Season ' + d['season_number'];
-        // }
     })
 
-    if (vis.summarizedData == true) {
-        vis.updateVis();
-    }
-    else {
-        vis.seasonsList = vis.chartData.map(function(d) {
-                return d.season_number;
-            }).filter(onlyUnique);
+    vis.updateVis();
 
-        vis.seasonData = [];
-        vis.seasonsList.forEach(function(seasonNumber) {
-            var seasonGroup = vis.chartData.filter(d => d.season_number == seasonNumber && d.imdb_rating != null && d.letter_grade != null);
-
-            var avSum = 0;
-            var imdbSum = 0;
-            seasonGroup.forEach(function(d) {
-                avSum += translateGrade(d.letter_grade);
-                imdbSum += d.imdb_rating;
-            })
-
-            var average_av = 100*(d3.format(".1f")(1.0*avSum / seasonGroup.length)/11)
-            var average_imdb = 10*d3.format(".1f")(1.0*imdbSum / seasonGroup.length)
-
-            if(average_av > 0 && average_imdb > 0) {
-                // console.log(seasonGroup);
-                vis.seasonData.push({
-                    'category_value': seasonNumber,
-                    'reviewed_episode_count': seasonGroup.length,
-                    'average_av_rating': average_av,
-                    'average_imdb_rating': average_imdb,
-                    'unique_id': seasonGroup[0].show_id + '-' + seasonGroup[0].season_number
-                }
-            )}
-        })
-
-        vis.chartData = vis.seasonData;
-        vis.updateVis();
-    }
 }
 
 
