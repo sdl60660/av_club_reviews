@@ -11,7 +11,7 @@ BoxPlot.prototype.initVis = function() {
 	var vis = this;
 
 	// set the dimensions and margins of the chart
-    vis.margin = {top: 60, right: 150, bottom: 40, left: 150};
+    vis.margin = {top: 60, right: 160, bottom: 40, left: 160};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -51,7 +51,7 @@ BoxPlot.prototype.initVis = function() {
         // 	return 'Season ' + d;
         // });
     vis.yAxis = vis.g.append("g")
-        .attr("class", "y axis")
+        .attr("class", "y axis y-axis")
         .attr("transform", "translate(" + vis.width/2 + ",0)")
         .attr("stroke", "black")
         .style("stroke-dasharray", ("3, 3"));
@@ -66,22 +66,29 @@ BoxPlot.prototype.initVis = function() {
         	else {
         		return d;
         	}
-        });
+        })
     vis.xAxis = vis.g.append("g")
         .attr("transform", "translate(0," + -10 + ")")
             .call(vis.xAxisCall);
+
+    d3.selectAll(".y-axis>.tick>text")
+  		.each(function(d, i){
+    		d3.select(this).style("font-size","14px");
+  		});
 
 
     vis.g.append("text")
     	.attr("x", 0)
     	.attr("y", 10)
     	.attr("text-anchor", "start")
+    	.style("font-size", "13px")
     	.text("⟵ IMDB Community Score is Higher")
 
     vis.g.append("text")
     	.attr("x", vis.width)
     	.attr("y", 10)
     	.attr("text-anchor", "end")
+    	.style("font-size", "13px")
     	.text("AV Club Score is Higher ⟶")
 
     vis.tip = d3.tip().attr('class', 'd3-tip')
@@ -131,7 +138,7 @@ BoxPlot.prototype.wrangleData = function() {
     })
 
     // console.log(vis.seasonData);
-
+    d3.selectAll(".off-chart-text").remove();
 	
 
 	vis.updateVis();
@@ -142,6 +149,8 @@ BoxPlot.prototype.updateVis = function() {
 	var vis = this;
 
 	vis.y.domain(vis.seasonData.map(function(d) { return d.season_number; }));
+
+	var radiusVal = Math.min(10, vis.y.bandwidth() / 3);
 
 	vis.yAxisCall.scale(vis.y)
 	vis.yAxis.call(vis.yAxisCall);
@@ -165,8 +174,27 @@ BoxPlot.prototype.updateVis = function() {
             .append("circle")
                 // .style('stroke-width', '1px')
                 // .style('stroke', 'white')
-                .attr("cx", function(d) {
-                	return vis.x(d.average_av_score - d.average_imdb_score);
+                .attr("cx", function(d, i, n) {
+                	var xVal = vis.x(d.average_av_score - d.average_imdb_score)
+                	if( d.average_av_score - d.average_imdb_score < -30 ) {
+                		d3.selectAll(".off-chart-text").remove();
+                		vis.g.append("text")
+                			.attr("x", xVal + 2*(radiusVal) + 2)
+                			.attr("y", vis.y(d.season_number) + (vis.y.bandwidth() / 2))
+                			.attr("class", "off-chart-text")
+                			.attr("text-anchor", "start")
+                			.text("⟵ This one's off the chart!")
+                	}
+                	else if (d.average_av_score - d.average_imdb_score > 30) {
+                		d3.selectAll(".off-chart-text").remove();
+                		vis.g.append("text")
+                			.attr("x", xVal - 2*(radiusVal) - 2)
+                			.attr("y", vis.y(d.season_number) + (vis.y.bandwidth() / 2))
+                			.attr("class", "off-chart-text")
+                			.attr("text-anchor", "end")
+                			.text("This one's off the chart! ⟶")
+                	}
+                	return xVal
                 }) 
                 .attr("cy", function(d) {
                 	return vis.y(d.season_number) + vis.y.bandwidth() / 2;
@@ -182,8 +210,6 @@ BoxPlot.prototype.updateVis = function() {
                 .attr("season", function(d) {
                     return d.season_number;
                 })
-                .attr("stroke-width", "1px")
-                .attr("stroke", "black")
                 .attr("r", 0)
                 .attr("height", vis.y.bandwidth())
                 .on("mouseover", function(d) {
@@ -194,7 +220,7 @@ BoxPlot.prototype.updateVis = function() {
                 })
                 .transition()
                     .delay(showChartsTransitionOutDuration + 50)
-                    .attr("r", vis.y.bandwidth() / 3)
+                    .attr("r", radiusVal)
                     .duration(showChartsTransitionInDuration)
 
 	

@@ -87,7 +87,7 @@ BubblePlot.prototype.initVis = function() {
         .attr("x", vis.width)
         .attr("y", vis.height + 30)
         .attr("text-anchor", "end")
-        .style("font-size", "15px")
+        .style("font-size", "13px")
         .text("Avg. IMDB Rating")
 
     vis.g.append("text")
@@ -95,7 +95,7 @@ BubblePlot.prototype.initVis = function() {
         .attr("x", 0)
         .attr("y", -38)
         .attr("text-anchor", "end")
-        .style("font-size", "15px")
+        .style("font-size", "13px")
         .attr("transform", "rotate(-90)")
         .text("Avg. AV Club Review")
 

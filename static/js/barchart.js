@@ -62,7 +62,7 @@ BarChart.prototype.initVis = function() {
         .attr("x", vis.width / 2)
         .attr("y", vis.height + 25 + barChartBottomOffset)
         .attr("text-anchor", "middle")
-        .style("font-size", "14px")
+        .style("font-size", "13px")
         .text("Season")
 
 

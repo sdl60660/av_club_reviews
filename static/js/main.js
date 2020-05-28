@@ -83,7 +83,7 @@ Promise.all(promises).then(function(allData) {
 	var genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
 
 	barChart = new BarChart('#show-bar-chart', [800, 700]);
-	boxPlot = new BoxPlot('#season-box-chart', [800, 300]);
+	boxPlot = new BoxPlot('#season-box-chart', [900, 300]);
 	// seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
 	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500], true)
