@@ -94,6 +94,15 @@ def get_review_info(link, show):
 		episode = None
 
 	grade = (review_box.findAll("span")[-1]).text
+	
+	if len(grade) > 2 or grade == None:
+		possible_grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F']
+		for letter_grade in possible_grades:
+			letter_grade = soup.find(text=letter_grade)
+			if letter_grade:
+				grade = letter_grade
+				break
+
 
 	return {
 		'show': show,
@@ -111,7 +120,7 @@ def get_review_info(link, show):
 	}
 
 
-crawler = Crawler(headless=False)
+crawler = Crawler(headless=True)
 crawler.get('https://www.avclub.com/c/tv-review')
 
 show_menu = crawler.driver.find_elements_by_xpath("//*[contains(text(), 'All Categories')]")[0]
@@ -145,12 +154,6 @@ for show in shows:
 	with open('data/review_data.json', 'w') as f:
 		json.dump(output_data, f)
 
-# print('-----ERROR LINKS-----')
-# for link in error_links:
-# 	print(link)
-
-# with open('error_links.txt', 'w') as f:
-# 	f.writelines(error_links)
 
 
 		

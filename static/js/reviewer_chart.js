@@ -82,8 +82,8 @@ ReviewerChart.prototype.initVis = function() {
             return text;
     })
 
-    vis.g.append('circle').attr('id', 'tipfollowscursor')
-    vis.svg.call(vis.tip);
+    vis.g.append('circle').attr('id', 'reviewer-tipfollowscursor')
+    vis.g.call(vis.tip);
 
 	vis.wrangleData();
 }
@@ -145,25 +145,26 @@ ReviewerChart.prototype.updateVis = function() {
 			})
 			.attr("opacity", 0)
             .on("mouseover", function(d) {
-            	console.log(d3.event.offsetY);
-            	var target = d3.select('#tipfollowscursor')
-                    .attr('cx', d3.event.pageX - 495)
-                    .attr('cy', d3.event.pageY - 253)
+            	var target = d3.select('#reviewer-tipfollowscursor')
+                    .attr('cx', d3.event.offsetX - 74)
+                    .attr('cy', d3.event.offsetY - 165)
                     .attr("r", 0)
                     .node();
 
-    			vis.tip.show(d, target);
+        		vis.tip.show(d, target);
+
             })
             .on("mouseout", function() {
             	vis.tip.hide();
             })
             .on("mousemove", function(d) {
-            	var target = d3.select('#tipfollowscursor')
-                    .attr('cx', d3.event.pageX - 495)
-                    .attr('cy', d3.event.pageY - 253)
-		            .node();
 
-		        vis.tip.show(d, target);
+            	var target = d3.select('#reviewer-tipfollowscursor')
+                    .attr('cx', d3.event.offsetX - 74)
+                    .attr('cy', d3.event.offsetY - 165)
+                    .attr("r", 0)
+                    .node();
+        		vis.tip.show(d, target);
             })
 
 

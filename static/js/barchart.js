@@ -78,7 +78,7 @@ BarChart.prototype.initVis = function() {
             return text;
     })
 
-    vis.g.append('circle').attr('id', 'tipfollowscursor')
+    vis.g.append('circle').attr('id', 'episode-tipfollowscursor')
     vis.g.call(vis.tip);
 
     vis.wrangleData();
@@ -260,17 +260,17 @@ BarChart.prototype.addOverlays = function() {
     })
 
     function mousemove(data) {
-        var target = d3.select('#tipfollowscursor')
+
+        var target = d3.select('#episode-tipfollowscursor')
             .attr('cx', d3.event.offsetX - 74)
             .attr('cy', d3.event.offsetY - 100)
             .node();
-
         vis.tip.show(data, target);
     }
 
     function mouseover(data, object) {
 
-        var target = d3.select('#tipfollowscursor')
+        var target = d3.select('#episode-tipfollowscursor')
                     .attr('cx', d3.event.offsetX - 74)
                     .attr('cy', d3.event.offsetY - 100)
                     .attr("r", 0)

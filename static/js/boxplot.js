@@ -11,7 +11,7 @@ BoxPlot.prototype.initVis = function() {
 	var vis = this;
 
 	// set the dimensions and margins of the chart
-    vis.margin = {top: 60, right: 160, bottom: 40, left: 160};
+    vis.margin = {top: 60, right: 40, bottom: 40, left: 200};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -28,7 +28,7 @@ BoxPlot.prototype.initVis = function() {
 
     // Add x and y scales
     vis.x = d3.scaleLinear()
-    	.domain([-30, 30])
+    	.domain([-35, 35])
         .range([0, vis.width])
         // .exponent(5)
 
