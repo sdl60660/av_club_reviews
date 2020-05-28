@@ -224,15 +224,6 @@ BubblePlot.prototype.updateVis = function() {
         d3.select(object)
             .attr("opacity", 0.9);
 
-        d3.selectAll(".season-" + object.getAttribute("season") + "-label")
-            .attr("opacity", 1.0);
-
-        d3.selectAll("rect.show-grade-bar")
-            .attr("opacity", 0.4);
-
-        var seasonNumber = object.getAttribute("season");
-        d3.selectAll(`rect.season-${seasonNumber}`)
-            .attr("opacity", 0.9);
     }
 
     function mouseout(data) {
@@ -244,11 +235,6 @@ BubblePlot.prototype.updateVis = function() {
         d3.selectAll(".season-label")
             .attr("opacity", 0.0);
 
-        d3.selectAll("rect.show-grade-bar")
-            .attr("opacity", vis.defaultOpacity);
-
-        // vis.g.select(this)
-        //     .attr("opacity", 0.9)
     }
 
     vis.svg.select(".legend-group").remove();
