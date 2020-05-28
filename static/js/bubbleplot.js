@@ -43,7 +43,11 @@ BubblePlot.prototype.initVis = function() {
 
     vis.tip = d3.tip().attr('class', 'd3-tip')
         .html(function(d) {
-            var text ="<span style='color:white'>" + d.category_value.replace('_', ' ') + "</span></br>"
+            var text = "<span style='color:white'>" + d.category_value.replace('_', ' ') + "</span></br></br>"
+
+            text +=  "<span style='color:white'>Avg. AV Club Rating: " + d3.format('.1f')(d.average_av_rating) + "/100</span></br>"
+            text +=  "<span style='color:white'>Avg. IMDB Rating: " + d3.format('.1f')(d.average_imdb_rating) + "/100</span></br>"
+
             return text;
     })
     vis.g.call(vis.tip);
