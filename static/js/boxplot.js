@@ -10,10 +10,10 @@ BoxPlot = function(_parentElement, _dimensions) {
 BoxPlot.prototype.initVis = function() {
 	var vis = this;
 
-	// set the dimensions and margins of the graph
-    vis.margin = {top: 60, right: 75, bottom: 40, left: 75};
-    vis.width = 700 - vis.margin.left - vis.margin.right;
-    vis.height = 300 - vis.margin.top - vis.margin.bottom;
+	// set the dimensions and margins of the chart
+    vis.margin = {top: 60, right: 150, bottom: 40, left: 150};
+    vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
+    vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
     vis.svg = d3.select(vis.parentElement)
         .append("svg")
@@ -27,10 +27,10 @@ BoxPlot.prototype.initVis = function() {
 
 
     // Add x and y scales
-    vis.x = d3.scalePow()
-    	.domain([-100, 100])
+    vis.x = d3.scaleLinear()
+    	.domain([-30, 30])
         .range([0, vis.width])
-        .exponent(5)
+        // .exponent(5)
 
     vis.y = d3.scaleBand()
     	.range([0, vis.height])
@@ -42,22 +42,59 @@ BoxPlot.prototype.initVis = function() {
       .range(colorPalette);
 
     // Add Axes
-    vis.yAxisCall = d3.axisLeft();
+    vis.yAxisCall = d3.axisLeft()
         // .orient("left")
-        // .ticks(12)
+        .ticks(0)
+        .tickValues([])
+        .tickSize(0)
         // .tickFormat(function (d) {
-        //   return vis.gradeData[d];
+        // 	return 'Season ' + d;
         // });
     vis.yAxis = vis.g.append("g")
         .attr("class", "y axis")
-        .attr("transform", "translate(" + 0 + ",0)");
+        .attr("transform", "translate(" + vis.width/2 + ",0)")
+        .attr("stroke", "black")
+        .style("stroke-dasharray", ("3, 3"));
 
     vis.xAxisCall = d3.axisTop()
         .scale(vis.x)
-        .tickValues([-100, -90, -80, 0, 80, 90, 100]);
+        .tickValues([-30, -20, -10, 0, 10, 20, 30])
+        .tickFormat(function(d) {
+        	if (d > 0) {
+        		return d3.format("+")(d)
+        	}
+        	else {
+        		return d;
+        	}
+        });
     vis.xAxis = vis.g.append("g")
         .attr("transform", "translate(0," + -10 + ")")
             .call(vis.xAxisCall);
+
+
+    vis.g.append("text")
+    	.attr("x", 0)
+    	.attr("y", 10)
+    	.attr("text-anchor", "start")
+    	.text("⟵ IMDB Community Score is Higher")
+
+    vis.g.append("text")
+    	.attr("x", vis.width)
+    	.attr("y", 10)
+    	.attr("text-anchor", "end")
+    	.text("AV Club Score is Higher ⟶")
+
+    vis.tip = d3.tip().attr('class', 'd3-tip')
+        .html(function(d) {
+            var text = "<span style='color:white'><strong>Season " + d.season_number + "</strong></span></br></br>";
+
+            text += "<span style='color:white'><strong>Avg. AV Club Review</strong>: " + d3.format('.1f')(d.average_av_score) + "/100" + "</span></br>";
+            text += "<span style='color:white'><strong>Avg. IMDB Score</strong>: " + d3.format('.1f')(d.average_imdb_score) + "/100</span></br></br>";
+            text += "<span style='color:white'><strong>Net Score</strong>: " + d3.format('+.1f')(d.average_av_score - d.average_imdb_score) + "</span></br>";
+
+            return text;
+    })
+    vis.g.call(vis.tip);
 
 	vis.wrangleData();
 }
@@ -67,7 +104,7 @@ BoxPlot.prototype.wrangleData = function() {
 	var vis = this;
 
 	vis.episodes = currentShowData.episodes;
-    vis.episodes =  vis.episodes.filter(x => x.letter_grade != null && x.letter_grade.length <= 2);
+    vis.episodes =  vis.episodes.filter(x => x.letter_grade != null && x.letter_grade.length <= 2 && x.imdb_rating != null);
 
     vis.seasonsList = vis.episodes.map(function(d) {
             return d.season_number;
@@ -109,92 +146,6 @@ BoxPlot.prototype.updateVis = function() {
 	vis.yAxisCall.scale(vis.y)
 	vis.yAxis.call(vis.yAxisCall);
 
-	// JOIN data with any existing elements
-    vis.rects = vis.g.selectAll('.av-rect')
-        .data(vis.seasonData, function(d) {
-            return d.unique_id;
-        })
-
-    // EXIT old elements not present in new data
-    vis.rects.exit()
-        .transition()
-            .duration(showChartsTransitionOutDuration)
-            .attr("x", vis.x(0))
-            .attr("width", 0)
-            .remove();
-
-    // ENTER new elements present in the data
-    vis.rects
-        .enter()
-            .append("rect")
-                // .style('stroke-width', '1px')
-                // .style('stroke', 'white')
-                .attr("x", vis.x(0)) 
-                .attr("width", function(d) {
-                	return vis.x(0);
-                })
-                .attr("fill", "#7FC844")
-                .attr("opacity", 0.7)
-                .attr("class", "av-rect")
-                .attr("season", function(d) {
-                    return d.season_number;
-                })
-                .attr("y", function(d) {
-                	return vis.y(d.season_number);
-                })
-                .attr("height", vis.y.bandwidth())
-                .transition()
-                    .delay(showChartsTransitionOutDuration + 50)
-                    .attr("width", function(d) {
-	                	return vis.x(d.average_av_score) / 2;
-	                })
-                    .duration(showChartsTransitionInDuration)
-
-
-    // JOIN data with any existing elements
-    vis.rects = vis.g.selectAll('.imdb-rect')
-        .data(vis.seasonData, function(d) {
-            return d.unique_id;
-        })
-
-    // EXIT old elements not present in new data
-    vis.rects.exit()
-        .transition()
-            .duration(showChartsTransitionOutDuration)
-            .attr("x", vis.x(0))
-            .attr("width", 0)
-            .remove();
-
-    // ENTER new elements present in the data
-    vis.rects
-        .enter()
-            .append("rect")
-                // .style('stroke-width', '1px')
-                // .style('stroke', 'white')
-                .attr("x", function(d) {
-                	return vis.x(-1*d.average_imdb_score) / 2;
-                }) 
-                .attr("width", function(d) {
-                	return vis.x(0);
-                })
-                .attr("fill", "#990011")
-                .attr("opacity", 0.7)
-                .attr("class", "imdb-rect")
-                .attr("season", function(d) {
-                    return d.season_number;
-                })
-                .attr("y", function(d) {
-                	return vis.y(d.season_number);
-                })
-                .attr("height", vis.y.bandwidth())
-                .transition()
-                    .delay(showChartsTransitionOutDuration + 50)
-                    .attr("width", function(d) {
-	                	return vis.x(d.average_imdb_score) / 2;
-	                })
-                    .duration(showChartsTransitionInDuration)
-
-
     // JOIN data with any existing elements
     vis.netCircles = vis.g.selectAll('circle')
         .data(vis.seasonData, function(d) {
@@ -215,8 +166,7 @@ BoxPlot.prototype.updateVis = function() {
                 // .style('stroke-width', '1px')
                 // .style('stroke', 'white')
                 .attr("cx", function(d) {
-                	console.log(vis.x(0), vis.x(d.average_av_score), vis.x(d.average_imdb_score));
-                	return vis.x(0) + (vis.x(d.average_av_score) - vis.x(d.average_imdb_score)) / 2;
+                	return vis.x(d.average_av_score - d.average_imdb_score);
                 }) 
                 .attr("cy", function(d) {
                 	return vis.y(d.season_number) + vis.y.bandwidth() / 2;
@@ -227,7 +177,7 @@ BoxPlot.prototype.updateVis = function() {
                 .attr("fill", function(d) {
                 	return vis.seasonColor(d.season_number);
                 })
-                .attr("opacity", 1.0)
+                .attr("opacity", 0.8)
                 .attr("class", "net-circle")
                 .attr("season", function(d) {
                     return d.season_number;
@@ -236,6 +186,12 @@ BoxPlot.prototype.updateVis = function() {
                 .attr("stroke", "black")
                 .attr("r", 0)
                 .attr("height", vis.y.bandwidth())
+                .on("mouseover", function(d) {
+                	vis.tip.show(d);
+                })
+                .on("mouseout", function() {
+                	vis.tip.hide();
+                })
                 .transition()
                     .delay(showChartsTransitionOutDuration + 50)
                     .attr("r", vis.y.bandwidth() / 3)

@@ -252,23 +252,97 @@ def get_genres():
 
 			all_data.append(create_genre_summary_data(genre, genre_results))
 
-			# all_data[genre] = {
-			# 	'show_data': genre_results,
-			# 	'summary_data': create_genre_summary_data(genre, genre_results)
-			# }
-
-		# all_show_data = {}
-		# for genre, genre_data in all_data.items():
-		# 	for show in genre_data['show_data']:
-		# 		all_show_data[show['category_value']] = show
-
-		# all_results = list(all_show_data.values())
-		# all_data['all'] = {
-		# 	'show_data': all_results,
-		# 	'summary_data': create_genre_summary_data('all_genres', all_results)
-		# }
-
 		return(json.dumps(all_data))
+
+@app.route('/get_reviewer_bias')
+def get_reviewer_bias():
+
+	sql_statement = """
+	WITH
+
+	"multi_reviewer_seasons" AS
+	(SELECT
+		CONCAT(show_name, '-', season_number) AS "show_season"
+		, show_name
+		, COUNT(episodes.id) AS "num_episodes"
+		, COUNT(DISTINCT reviewers.reviewer_name) AS "num_reviewers"
+		, AVG(numeric_score) as "average_score"
+	FROM episodes
+	LEFT JOIN shows ON episodes.show_id = shows.id
+	LEFT JOIN reviews ON episodes.id = reviews.episode_id
+	LEFT JOIN reviewers ON reviews.reviewer_id = reviewers.id
+	GROUP BY show_name, season_number
+	HAVING COUNT(DISTINCT reviewers.reviewer_name) > 1
+	ORDER BY show_name, season_number ASC),
+
+	"reviewer_shows_seasons" AS
+	(SELECT
+		 CONCAT(show_name, '-', season_number) AS "show_season"
+		 , reviewer_name
+		 , COUNT(episodes.id) AS "num_reviewed_episodes"
+		 , AVG(numeric_score) AS "average_reviewer_score"
+	 FROM
+	 reviews
+	 LEFT JOIN reviewers ON reviewers.id = reviews.reviewer_id
+	 LEFT JOIN episodes ON reviews.episode_id = episodes.id
+	 LEFT JOIN shows ON episodes.show_id = shows.id
+	 GROUP BY show_name, season_number, reviewer_name
+	 HAVING COUNT(episodes.id) > 1 -- Threshold for number of episodes they need to have reviewed in the shared season
+	)
+
+	SELECT
+		reviewer_name
+		, SUM(weighted_z_score) / SUM(num_reviewed_episodes) AS "mean_bias"
+		, COUNT(reviewer_name) AS "shared_reviewed_seasons_count"
+		, COUNT(DISTINCT show_name) AS "shared_reviewed_shows_count"
+	FROM
+		(SELECT
+			reviewer_shows_seasons.*
+			, multi_reviewer_seasons.*
+			, average_reviewer_score - average_score AS "z-score"
+			, num_reviewed_episodes*(average_reviewer_score - average_score) AS "weighted_z_score"
+		FROM reviewer_shows_seasons
+		LEFT JOIN multi_reviewer_seasons ON reviewer_shows_seasons.show_season = multi_reviewer_seasons.show_season
+		WHERE multi_reviewer_seasons.num_reviewers >= 2) "show_season_biases"
+	GROUP BY reviewer_name
+	HAVING COUNT(reviewer_name) > 2 -- Threshold for number of shared season reviews they've done
+	AND COUNT(DISTINCT show_name) > 2 -- Threshold for number of shared show reviews they've done
+	ORDER BY SUM(weighted_z_score) / SUM(num_reviewed_episodes) DESC"""
+
+	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
+		cur.execute(sql_statement)
+		data = cur.fetchall()
+
+		for i, x in enumerate(data):
+			data[i] = dict(x)
+			data[i]['mean_bias'] = float(x['mean_bias'])
+
+		return(json.dumps(data))
+
+@app.route('/get_raw_reviewer_scores')
+def get_raw_reviewer_scores():
+	sql_statement = """
+	SELECT
+		reviewer_name
+		, AVG(numeric_score) AS "mean_score"
+		, COUNT(DISTINCT show_id) AS "total_shows"
+		, COUNT(DISTINCT episode_id) AS "total_reviews"
+	FROM reviews
+	LEFT JOIN reviewers ON reviewers.id = reviews.reviewer_id
+	LEFT JOIN episodes ON episodes.id = reviews.episode_id
+	GROUP BY reviewer_name
+	HAVING COUNT(DISTINCT show_id) > 10
+	ORDER BY AVG(numeric_score) DESC"""
+
+	with CursorFromConnectionFromPool(dict_cursor=True) as cur:
+		cur.execute(sql_statement)
+		data = cur.fetchall()
+
+		for i, x in enumerate(data):
+			data[i] = dict(x)
+			data[i]['mean_score'] = float(x['mean_score'])
+
+		return(json.dumps(data))
 
 
 

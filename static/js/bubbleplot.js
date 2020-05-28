@@ -14,7 +14,7 @@ BubblePlot.prototype.initVis = function() {
     var vis = this;
 
     // set the dimensions and margins of the graph
-    vis.margin = {top: 30, right: 80, bottom: 40, left: 40};
+    vis.margin = {top: 30, right: 80, bottom: 40, left: 70};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right,
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -48,6 +48,9 @@ BubblePlot.prototype.initVis = function() {
     })
     vis.g.call(vis.tip);
 
+    vis.reverseGradeTranslate = d3.scaleQuantize()
+        .domain([0, 100])
+        .range(['F', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A+/A']);
     // Add Y axis
     vis.y = d3.scalePow()
         .domain([ 0, 100 ])
@@ -55,15 +58,20 @@ BubblePlot.prototype.initVis = function() {
         .exponent(chartScaleExponent);
     vis.g.append("g")
         .call(d3.axisLeft(vis.y)
-                .tickValues([0, 20,30,40,50,60,70,80,90,100]));
+            .tickValues([0,19,28,37,46,55,64,73,82,91,100])
+            .tickFormat(vis.reverseGradeTranslate));
 
     // Add a scale for bubble size
     vis.z = d3.scaleLog()
         .range([ 3, 15 ]);
 
     vis.seasonColor = d3.scaleOrdinal()
-      .domain([ 0, 100 ])
-      .range(colorPalette);
+        .domain([ 0, 100 ])
+        .range(colorPalette);
+
+    vis.reverseGradeTranslate = d3.scaleQuantize()
+        .domain([0, 100])
+        .range(['F', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A+/A']);
 
     vis.dividerLine = vis.g.append("line")
         .attr("x1", 0)
@@ -79,15 +87,15 @@ BubblePlot.prototype.initVis = function() {
         .attr("x", vis.width)
         .attr("y", vis.height + 30)
         .attr("text-anchor", "end")
-        .attr("font-size", "15px")
+        .style("font-size", "15px")
         .text("Avg. IMDB Rating")
 
     vis.g.append("text")
         .attr("class", "y-axis-label")
         .attr("x", 0)
-        .attr("y", -33)
+        .attr("y", -38)
         .attr("text-anchor", "end")
-        .attr("font-size", "15px")
+        .style("font-size", "15px")
         .attr("transform", "rotate(-90)")
         .text("Avg. AV Club Review")
 
@@ -355,17 +363,34 @@ BubblePlot.prototype.addBackgroundColoring = function() {
         .attr("fill", 'url(#grad)')
         .attr("fill-opacity", 0.25);
 
-    vis.g.append("text")
-        .attr("x", vis.width - 15)
-        .attr("y", vis.height - 20)
-        .attr("text-anchor", "end")
-        .text("AV Club Rates Lower Relative to IMDB Rating")
 
-    vis.g.append("text")
-        .attr("x", 20)
+    vis.rightCornerText = vis.g.append("g")
+    vis.rightCornerText.append("text")
+        .attr("x", vis.width - 70)
+        .attr("y", vis.height - 30)
+        .attr("width", 30)
+        .attr("text-anchor", "middle")
+        .text("AV Club Score Is Worse")
+    vis.rightCornerText.append("text")
+        .attr("x", vis.width - 70)
+        .attr("y", vis.height - 20)
+        .attr("width", 30)
+        .attr("text-anchor", "middle")
+        .text("Relative to IMDB Rating")
+
+    vis.leftCornerText = vis.g.append("g")
+    vis.leftCornerText.append("text")
+        .attr("x", 70)
         .attr("y", 20)
         .attr("width", 30)
-        .attr("text-anchor", "start")
-        .text("AV Club Rates Higher Relative to IMDB Rating")
+        .attr("text-anchor", "middle")
+        .text("AV Club Score Is Better")
+    vis.leftCornerText.append("text")
+        .attr("x", 70)
+        .attr("y", 30)
+        .attr("width", 30)
+        .attr("text-anchor", "middle")
+        .text("Relative to IMDB Rating")
+
 }
 

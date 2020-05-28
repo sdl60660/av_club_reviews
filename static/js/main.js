@@ -2,6 +2,9 @@
 var currentShowData;
 var directorData;
 
+var reviewerBias;
+var rawReviewerScores;
+
 var colorPalette = ['#0F4C81', '#F5B895', '#84898c', '#7FC844',
 '#b75e41', '#990011', '#463F3A', '#759FBC', '#6A1A4C',
 '#BA9238', '#A58D7F', '#F3D5AD', '#DBDD98', '#996848'];
@@ -14,7 +17,7 @@ var barChartBottomOffset = 15;
 
 var episodeThreshold = 8;
 
-var defaultGenre = 'comedy';
+var defaultGenre = 'thriller';
 var defaultShow = 'Breaking Bad';
 
 var showId = $("#show-select").find(`:contains(${defaultShow})`).attr('id').substring(5);
@@ -62,7 +65,9 @@ var promises = [
 	d3.json("/get_show?show_id=" + showId),
 	d3.json("/get_directors"),
 	d3.json("/get_genre?genre_name=" + defaultGenre),
-	d3.json("/get_genres")
+	d3.json("/get_genres"),
+	d3.json("/get_reviewer_bias"),
+	d3.json("/get_raw_reviewer_scores")
 ];
 
 Promise.all(promises).then(function(allData) {
@@ -70,17 +75,23 @@ Promise.all(promises).then(function(allData) {
 	directorData = allData[1];
 	genreData = allData[2];
 	genreMetaData = allData[3];
+	reviewerBias = allData[4];
+	rawReviewerScores = allData[5];
+
+	console.log(rawReviewerScores);
 
 	var genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
 
 	barChart = new BarChart('#show-bar-chart', [800, 700]);
-	boxPlot = new BoxPlot('#season-box-chart', [800, 700]);
+	boxPlot = new BoxPlot('#season-box-chart', [800, 300]);
 	// seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
 	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500], true)
 	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [600,500], true);
 	
 	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600], true);
+
+	reviewerBiasPlot = new ReviewerChart("#reviewer-bias-plot", [800, 500]);
 
 });
 
