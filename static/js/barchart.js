@@ -75,6 +75,8 @@ BarChart.prototype.initVis = function() {
             text += "<span style='color:white'><strong>Grade</strong>: " + d.letter_grade + "</span></br>"
             text += "<span style='color:white'><strong>Reviewer</strong>: " + d.reviewer_name + "</span></br>"
 
+            // text += "</br><span style='color:white'>(click to view)</span>";
+
             return text;
     })
 
@@ -256,6 +258,9 @@ BarChart.prototype.addOverlays = function() {
             })
             .on("mousemove", function() {
                 mousemove(d);
+            })
+            .on("click", function() {
+                window.open(d.review_link, '_blank');
             })
     })
 
