@@ -10,7 +10,7 @@ ReviewerChart.prototype.initVis = function() {
 	var vis = this;
 
 	// set the dimensions and margins of the chart
-    vis.margin = {top: 150, right: 75, bottom: 40, left: 75};
+    vis.margin = {top: 150, right: 75, bottom: 60, left: 85};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -71,11 +71,60 @@ ReviewerChart.prototype.initVis = function() {
         .attr("transform", "translate(0," + vis.height/2 + ")")
             .call(vis.xAxisCall);
 
+    vis.g.append("text")
+        .attr("class", "x-axis-label")
+        .attr("x", vis.width/2)
+        .attr("y", vis.height + 20)
+        .attr("text-anchor", "middle")
+        .style("font-size", "13px")
+        .text("Reviewers")
+
+    vis.weightedBiasTip = d3.tip()
+    	.attr("class", "d3-tip")
+    	.html(function() {
+    		var text = '<div style="max-width:250px;"><span>A measure of how harsh or lenient a reviewer is by comparing ';
+    		text +=    "their grades to their peers across the same seasons of the same shows (min. 3 seasons of overlap with other reviewers).<br><br>";
+    		text +=    "Represented on a 100 point scale, where 9 points is roughly a letter grade.</span></div>";
+    		return text;
+    	})
+    vis.g.call(vis.weightedBiasTip);
+    vis.g.append("text")
+        .attr("class", "y-axis-label")
+        .attr("x", -vis.height/2)
+        .attr("y", -32)
+        .attr("text-anchor", "middle")
+        .style("font-size", "13px")
+        .attr("transform", "rotate(-90)")
+        .on("mouseover", function(d) {
+        	vis.weightedBiasTip.show(d);
+        })
+        .on("mouseout", function() {
+        	vis.weightedBiasTip.hide();
+        })
+        .text("Weighted Bias Score");
+
+    vis.g.append("text")
+        .attr("class", "y-axis-label")
+        .attr("x", -30)
+        .attr("y", -32)
+        .attr("text-anchor", "start")
+        .style("font-size", "10px")
+        .attr("transform", "rotate(-90)")
+        .text("More Lenient Critic ⟶")
+
+    vis.g.append("text")
+        .attr("class", "y-axis-label")
+        .attr("x", -vis.height + 30)
+        .attr("y", -32)
+        .attr("text-anchor", "end")
+        .style("font-size", "10px")
+        .attr("transform", "rotate(-90)")
+        .text("⟵ Harsher Critic")
+
     vis.tip = d3.tip().attr('class', 'd3-tip')
         .html(function(d) {
-            var text = "<span style='color:white'><strong>Reviewer</strong>: " + d.reviewer_name + "</span></br>";
-
-            // text += "<span style='color:white'><strong>Avg. AV Club Review</strong>: " + d3.format('.1f')(d.average_av_score) + "/100 (" + ")</span></br>";
+            var text = "<span style='color:white'><strong>Reviewer</strong>: " + d.reviewer_name + "</span></br></br>";
+            text += "<span style='color:white'><strong>Weighted Bias Score</strong>: " + d3.format('+.1f')(d.mean_bias) + "</span></br>";
             // text += "<span style='color:white'><strong>Avg. IMDB Score</strong>: " + d3.format('.1f')(d.average_imdb_score) + "/100</span></br></br>";
             // text += "<span style='color:white'><strong>Net Score</strong>: " + d3.format('+.1f')(d.average_av_score - d.average_imdb_score) + "</span></br>";
 
@@ -146,7 +195,7 @@ ReviewerChart.prototype.updateVis = function() {
 			.attr("opacity", 0)
             .on("mouseover", function(d) {
             	var target = d3.select('#reviewer-tipfollowscursor')
-                    .attr('cx', d3.event.offsetX - 74)
+                    .attr('cx', d3.event.offsetX - 84)
                     .attr('cy', d3.event.offsetY - 165)
                     .attr("r", 0)
                     .node();
@@ -160,7 +209,7 @@ ReviewerChart.prototype.updateVis = function() {
             .on("mousemove", function(d) {
 
             	var target = d3.select('#reviewer-tipfollowscursor')
-                    .attr('cx', d3.event.offsetX - 74)
+                    .attr('cx', d3.event.offsetX - 84)
                     .attr('cy', d3.event.offsetY - 165)
                     .attr("r", 0)
                     .node();
