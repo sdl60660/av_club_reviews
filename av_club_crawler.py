@@ -96,6 +96,7 @@ def get_review_info(link, show):
 	grade = (review_box.findAll("span")[-1]).text
 	
 	if len(grade) > 2 or grade == None:
+		grade = 'N/A'
 		possible_grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F']
 		for letter_grade in possible_grades:
 			letter_grade = soup.find(text=letter_grade)
