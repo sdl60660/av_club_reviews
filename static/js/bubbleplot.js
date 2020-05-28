@@ -45,8 +45,10 @@ BubblePlot.prototype.initVis = function() {
         .html(function(d) {
             var text = "<span style='color:white'>" + d.category_value.replace('_', ' ') + "</span></br></br>"
 
-            text +=  "<span style='color:white'>Avg. AV Club Rating: " + d3.format('.1f')(d.average_av_rating) + "/100</span></br>"
-            text +=  "<span style='color:white'>Avg. IMDB Rating: " + d3.format('.1f')(d.average_imdb_rating) + "/100</span></br>"
+            text +=  "<span style='color:white'>Avg. AV Club Rating: " + d3.format('.1f')(d.average_av_rating) + "/100</span></br>";
+            text +=  "<span style='color:white'>Avg. IMDB Rating: " + d3.format('.1f')(d.average_imdb_rating) + "/100</span></br></br>";
+
+            text += "<span style='color:white'>Num. Reviews: " + d.reviewed_episode_count + "</span></br>";
 
             return text;
     })
@@ -283,7 +285,7 @@ BubblePlot.prototype.attachCircleSizeLegend = function() {
     sampleValues.forEach(function(numReviews, i) {
         var radius = vis.z(numReviews);
         var yCoordinate = vis.height - 5 - (15*i);
-        var xCoordinate = vis.width + 70;
+        var xCoordinate = vis.width + 90;
 
         if(i>0) {
             var previousItems = sampleValues.slice(0,i);
@@ -309,7 +311,7 @@ BubblePlot.prototype.attachCircleSizeLegend = function() {
 
         vis.legendGroup.append("line")
             .attr("x1", xCoordinate+radius+3)
-            .attr("x2", vis.width+95)
+            .attr("x2", vis.width+115)
             .attr("y1", yCoordinate)
             .attr("y2", yCoordinate)
             .attr("class", "legend-dash")
@@ -317,7 +319,7 @@ BubblePlot.prototype.attachCircleSizeLegend = function() {
             .style("stroke-dasharray", ("2, 2"));
 
         vis.legendGroup.append("text")
-            .attr("x", vis.width+95)
+            .attr("x", vis.width+115)
             .attr("y", yCoordinate)
             .attr("class", "legend-text")
             .style("font-size", "10px")
@@ -331,7 +333,7 @@ BubblePlot.prototype.attachCircleSizeLegend = function() {
 
     vis.legendGroup.append("text")
         .attr("y", topSampleY - 10)
-        .attr("x", vis.width + 80)
+        .attr("x", vis.width + 100)
         .attr("text-anchor", "middle")
         .attr("text-decoration", "underline")
         .style("font-size", "10px")
