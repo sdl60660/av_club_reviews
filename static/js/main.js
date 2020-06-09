@@ -1,6 +1,7 @@
 
 var currentShowData;
 var directorData;
+var genreShowData;
 
 var reviewerBias;
 var rawReviewerScores;
@@ -17,7 +18,7 @@ var barChartBottomOffset = 15;
 
 var episodeThreshold = 8;
 
-var defaultGenre = 'thriller';
+var defaultGenre = 'comedy';
 var defaultShow = 'Breaking Bad';
 
 var showId = $("#show-select").find(`:contains(${defaultShow})`).attr('id').substring(5);
@@ -78,11 +79,12 @@ Promise.all(promises).then(function(allData) {
 	reviewerBias = allData[4];
 	rawReviewerScores = allData[5];
 
-	console.log(rawReviewerScores);
+	genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
+	console.log(genreShowData);
 
-	var genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
+	rankedShows = new ShowBarChart('#ranked-show-bar-chart', [800, 700]);
 
-	barChart = new BarChart('#show-bar-chart', [800, 700]);
+	barChart = new BarChart('#episodes-bar-chart', [800, 700]);
 	boxPlot = new BoxPlot('#season-box-chart', [900, 300]);
 	// seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 

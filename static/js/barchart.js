@@ -270,6 +270,8 @@ BarChart.prototype.addOverlays = function() {
             .attr('cx', d3.event.offsetX - 74)
             .attr('cy', d3.event.offsetY - 100)
             .node();
+
+        console.log(target);
         vis.tip.show(data, target);
     }
 

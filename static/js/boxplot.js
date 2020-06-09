@@ -214,6 +214,12 @@ BoxPlot.prototype.updateVis = function() {
                 .attr("height", vis.y.bandwidth())
                 .on("mouseover", function(d) {
                 	vis.tip.show(d);
+
+                	// g.selectAll("circle")
+                	// 	.attr("opacity", 0.4);
+
+                	// d3.select(this)
+                	// 	.attr("opacity", 0.9);
                 })
                 .on("mouseout", function() {
                 	vis.tip.hide();
