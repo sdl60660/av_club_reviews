@@ -24,6 +24,22 @@ var defaultShow = 'Breaking Bad';
 var showId = $("#show-select").find(`:contains(${defaultShow})`).attr('id').substring(5);
 // var barChart;
 
+var domainIndices;
+
+var rankedShows;
+var chartBrush;
+
+var barChart;
+var boxPlot;
+
+var genreFullBubblePlot;
+var genreShowBubblePlot;
+
+var directorBubblePlot;
+
+var reviewerBiasPlot;
+
+
 $("#genre-select").val(defaultGenre);
 $("#genre-select")
 	.on("change", function() {
@@ -83,6 +99,9 @@ Promise.all(promises).then(function(allData) {
 	console.log(genreShowData);
 
 	rankedShows = new ShowBarChart('#ranked-show-bar-chart', [800, 700]);
+	chartBrush = new ChartBrush('#ranked-show-chartbrush', [800, 150]);
+
+	chartBrush.setBrush([35, 125]);
 
 	barChart = new BarChart('#episodes-bar-chart', [800, 700]);
 	boxPlot = new BoxPlot('#season-box-chart', [900, 300]);

@@ -7,10 +7,10 @@ ShowBarChart = function(_parentElement, _dimensions) {
 }
 
 ShowBarChart.prototype.initVis = function() {
-	var vis = this;
+	const vis = this;
 
 	// set the dimensions and margins of the chart
-    vis.margin = {top: 150, right: 75, bottom: 60, left: 85};
+    vis.margin = {top: 150, right: 75, bottom: 30, left: 85};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -87,7 +87,8 @@ ShowBarChart.prototype.initVis = function() {
     		text +=    "their grades to their peers across the same seasons of the same shows (min. 3 seasons of overlap with other reviewers).<br><br>";
     		text +=    "Represented on a 100 point scale, where 9 points is roughly a letter grade.</span></div>";
     		return text;
-    	})
+    	});
+
     vis.g.call(vis.weightedBiasTip);
     vis.g.append("text")
         .attr("class", "y-axis-label")
@@ -130,62 +131,84 @@ ShowBarChart.prototype.initVis = function() {
             // text += "<span style='color:white'><strong>Net Score</strong>: " + d3.format('+.1f')(d.average_av_score - d.average_imdb_score) + "</span></br>";
 
             return text;
-    })
+    });
 
     vis.g.append('circle').attr('id', 'tipfollowscursor')
     vis.g.call(vis.tip);
 
 	vis.wrangleData();
-}
+};
 
 ShowBarChart.prototype.wrangleData = function() {
-	var vis = this;
+	const vis = this;
 
 	vis.chartData = genreShowData.sort(function(a,b) {
         return b.rating_difference - a.rating_difference;
     });
 
+	if (typeof domainIndices !== "undefined") {
+		vis.chartData = vis.chartData.slice(domainIndices[0], domainIndices[1]);
+	}
 
 	vis.updateVis();
 }
 
 ShowBarChart.prototype.updateVis = function() {
-	var vis = this;
+	const vis = this;
 
-	vis.x.domain(vis.chartData.map(function(d) { return d.show_name }))
+	vis.x.domain(vis.chartData.map(function(d) { return d.show_name }));
 
-	vis.g.selectAll("rect")
-		.data(vis.chartData)
+	vis.showRects = vis.g.selectAll("rect")
+		.data(vis.chartData, function(d) {
+			return d.show_name;
+		});
+
+	vis.showRects
+		.exit()
+		.remove();
+
+	vis.showRects
 		.enter()
 		.append("rect")
 			.attr("class", "content-bar")
-			.attr("x", function(d) {
-				return vis.x(d.show_name);
-			})
-			.attr("height", function(d) {
-				return Math.abs(vis.height/2 - vis.y(d.rating_difference));
-			})
-			.attr("width", vis.x.bandwidth())
-			.attr("y", function(d) {
-				return vis.y(Math.max(0,d.rating_difference));
-			})
+			.attr("height", 0)
+			.attr("y", vis.y(0))
 			.attr("fill", function(d) {
 				return vis.colorScale(d.rating_difference);
 			})
 			.attr("opacity", 0.7)
 			.on("mouseover", function(d) {
-                	vis.tip.show(d);
-                })
+				vis.tip.show(d);
+			})
             .on("mouseout", function() {
             	vis.tip.hide();
             })
+		.merge(vis.showRects)
+			.attr("x", function(d) {
+				return vis.x(d.show_name);
+			})
+			.attr("width", vis.x.bandwidth())
+		.transition()
+			.attr("height", function(d) {
+				return Math.abs(vis.height/2 - vis.y(d.rating_difference));
+			})
+			.attr("y", function(d) {
+				return vis.y(Math.max(0, d.rating_difference));
+			});
 
     // Overlay Bars
-    vis.g.selectAll("rect.overlay")
-		.data(vis.chartData)
+    vis.overlayBars = vis.g.selectAll("rect.overlay")
+		.data(vis.chartData, function(d) {
+			return d.show_name;
+		});
+
+    vis.overlayBars.exit().remove();
+
+    vis.overlayBars
 		.enter()
 		.append("rect")
 			.attr("class", "overlay")
+		.merge(vis.overlayBars)
 			.attr("x", function(d) {
 				return vis.x(d.show_name);
 			})
@@ -218,6 +241,4 @@ ShowBarChart.prototype.updateVis = function() {
                     .node();
         		vis.tip.show(d, target);
             })
-
-
-}
+};
