@@ -19,6 +19,12 @@ button {
     font-weight: bold;
 }
 
+#section-select {
+    text-align: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
 #ranked-show-bar-chart .y-axis text {
     font-size: 10px !important;
 }

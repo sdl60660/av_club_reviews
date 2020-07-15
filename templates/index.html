@@ -21,91 +21,117 @@
 
 <body>
 
-	<nav class="navbar navbar-default">
-        <div class="container">
+    <div id="section-select">
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-secondary bootstrap-button-toggle active">
+                <input type="radio" name="section-select" value="shows" id="shows_button" autocomplete="off" checked>Shows
+            </label>
+            <label class="btn btn-secondary bootstrap-button-toggle">
+                <input type="radio" name="section-select" value="seasons" id="seasons_button" autocomplete="off">Seasons/Episodes
+            </label>
+            <label class="btn btn-secondary bootstrap-button-toggle">
+                <input type="radio" name="section-select" value="genres" id="genres_button" autocomplete="off">Genres
+            </label>
+            <label class="btn btn-secondary bootstrap-button-toggle">
+                <input type="radio" name="section-select" value="directors" id="directors_button" autocomplete="off">Directors
+            </label>
+            <label class="btn btn-secondary bootstrap-button-toggle">
+                <input type="radio" name="section-select" value="reviewers" id="reviewers_button" autocomplete="off">Reviewers
+            </label>
         </div>
-    </nav>
-  		
+    </div>
 
 	<!-- Bootstrap grid setup -->
-    <div class="container">
-    	<div class="row">
-    		<div class="col-md-2"></div>
-    		<div class="col-md-8">
-                <div class="row" style="text-align: center;">
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                      <label class="btn btn-secondary bootstrap-button-toggle active" title="Average AV Club rating of all episodes of a series">
-                        <input type="radio" name="showbar-var-select" value="average_av_rating" id="avg_rating_button" autocomplete="off" checked>AV Club Grade
-                      </label>
-                      <label class="btn btn-secondary bootstrap-button-toggle" title="Average rating of a series relative to the average IMDB community score">
-                        <input type="radio" name="showbar-var-select" value="rating_difference" id="net_rating_button" autocomplete="off">Net Rating
-                      </label>
+    <div class="container" style="margin-top: 20px">
+        <div id="shows-wrapper" class="section-wrapper" style="display: block">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <div class="row" style="text-align: center;">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                          <label class="btn btn-secondary bootstrap-button-toggle active" title="Average AV Club rating of all episodes of a series">
+                            <input type="radio" name="showbar-var-select" value="average_av_rating" id="avg_rating_button" autocomplete="off" checked>AV Club Grade
+                          </label>
+                          <label class="btn btn-secondary bootstrap-button-toggle" title="Average rating of a series relative to the average IMDB community score">
+                            <input type="radio" name="showbar-var-select" value="rating_difference" id="net_rating_button" autocomplete="off">Net Rating
+                          </label>
+                        </div>
+                    </div>
+                    <div class="row" id="ranked-show-bar-chart"></div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8" id="ranked-show-chartbrush"></div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+        <div id="seasons-wrapper" class="section-wrapper" style="display: none">
+            <div class="row">
+                <h2 style="text-align: center">Shows</h2>
+                </br>
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <select id="show-select" class="form-control"></select>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10" style="text-align:center;">
+                    <div class="row" id="episodes-bar-chart"></div>
+                    <div class="row" id="season-box-chart"></div>
+                </div>
+                <div class="col-md-1"></div>
+                <!-- <div class="col-md-6">
+                    <div class="row" id="season-bar-chart"></div>
+                    <div class="row" id="ratings-plot"></div>
+                </div> -->
+            </div>
+        </div>
+        <div id="genres-wrapper" class="section-wrapper" style="display: none">
+            <div class="row">
+                <h2 style="text-align: center">Genres</h2>
+                </br>
+
+                <div class="row">
+                    <div class="col-md-9"></div>
+                    <div class="col-md-3">
+                        <select id="genre-select" class="form-control">
+                            <option class="genre-option" id="genre-all" value="all">All</option>
+                        </select>
                     </div>
                 </div>
-                <div class="row" id="ranked-show-bar-chart"></div>
+
+                <div class="row">
+                    <div class="col-md-5" id="full-genre-plot"></div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-5" id="genre-show-plot"></div>
+                    </div>
+                </div>
             </div>
-    		<div class="col-md-2"></div>
-    	</div>
-        <div class="row">
-    		<div class="col-md-2"></div>
-    		<div class="col-md-8" id="ranked-show-chartbrush"></div>
-    		<div class="col-md-2"></div>
-    	</div>
-        <div class="row">
-        	<h2 style="text-align: center">Shows</h2>
-        	</br>
-            <div class="col-md-4"></div>
-            <div class="col-md-4">
-                <select id="show-select" class="form-control"></select>
-            </div>  
-            <div class="col-md-4"></div>                       
         </div>
-    	<div class="row">
-    		<div class="col-md-1"></div>
-        	<div class="col-md-10" style="text-align:center;">
-        		<div class="row" id="episodes-bar-chart"></div>
-        		<div class="row" id="season-box-chart"></div>
-        	</div>
-        	<div class="col-md-1"></div>
-        	<!-- <div class="col-md-6">
-        		<div class="row" id="season-bar-chart"></div>
-        		<div class="row" id="ratings-plot"></div>
-        	</div> -->
-        </div>
-    	</br>
-        <div class="row">
-        	<h2 style="text-align: center">Genres</h2>
-        	</br>
 
-        	<div class="row">
-        		<div class="col-md-9"></div>
-    			<div class="col-md-3">
-    				<select id="genre-select" class="form-control">
-    					<option class="genre-option" id="genre-all" value="all">All</option>
-    				</select>
-    			</div>
-        	</div>
+        <div id="directors-wrapper" class="section-wrapper" style="display: none">
+            <div class="row">
+                <h2 style="text-align: center">Directors</h2>
+                </br>
+                <!-- <div class="col-md-4"></div> -->
+                <div class="col-md-12" style="text-align: center; margin-left: 10px" id="full-director-plot"></div>
+                <!-- <div class="col-md-2"></div> -->
+            </div>
+        </div>
 
-        	<div class="row">
-	        	<div class="col-md-5" id="full-genre-plot"></div>
-	        	<div class="col-md-2"></div>
-	        	<div class="col-md-5" id="genre-show-plot"></div>
-	        	</div>
-        	</div>
-        </div>
-        <div class="row">
-        	<h2 style="text-align: center">Directors</h2>
-        	</br>
-        	<!-- <div class="col-md-4"></div> -->
-        	<div class="col-md-12" style="text-align: center; margin-left: 10px" id="full-director-plot"></div>
-        	<!-- <div class="col-md-2"></div> -->
-        </div>
-        <div class="row">
-        	<h2 style="text-align: center">Reviewers</h2>
-        	</br>
-        	<!-- <div class="col-md-4"></div> -->
-        	<div class="col-md-12" style="text-align: center; margin-left: 10px" id="reviewer-bias-plot"></div>
-        	<!-- <div class="col-md-2"></div> -->
+        <div id="reviewers-wrapper" class="section-wrapper" style="display: none">
+            <div class="row">
+                <h2 style="text-align: center">Reviewers</h2>
+                </br>
+                <!-- <div class="col-md-4"></div> -->
+                <div class="col-md-12" style="text-align: center; margin-left: 10px" id="reviewer-bias-plot"></div>
+                <!-- <div class="col-md-2"></div> -->
+            </div>
         </div>
     </div>
 

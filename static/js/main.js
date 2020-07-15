@@ -54,6 +54,12 @@ $("#show-select")
 	});
 
 
+$("input[name=section-select]:radio").bind( "change", function() {
+    $(".section-wrapper").hide();
+    $(`#${$(this).val()}-wrapper`).show();
+});
+
+
 $("input[name=showbar-var-select]:radio").bind( "change", function() {
     showBarVar = $(this).val();
     rankedShows.wrangleData();
