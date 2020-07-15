@@ -82,7 +82,7 @@ ShowBarChart.prototype.initVis = function() {
 		.offset([-55, 5]);
 
     vis.g.call(vis.weightedBiasTip);
-    vis.g.append("text")
+    vis.yAxisLabel = vis.g.append("text")
         .attr("class", "y-axis-label")
         .attr("x", -vis.height/2)
         .attr("y", -32)
@@ -156,7 +156,10 @@ ShowBarChart.prototype.updateVis = function() {
 			.exponent(2);
 
 		vis.colorScale
-			.domain([100, 80, 50])
+			.domain([100, 80, 50]);
+
+		vis.yAxisLabel
+			.text("Avg. AV Club Score");
 	}
 	else {
 		vis.yAxisCall
@@ -183,6 +186,9 @@ ShowBarChart.prototype.updateVis = function() {
 
 		vis.colorScale
 			.domain([15, 0, -15]);
+
+		vis.yAxisLabel
+			.text("Net Rating");
 	}
 
 
