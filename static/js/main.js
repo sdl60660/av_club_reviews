@@ -25,6 +25,7 @@ var showId = $("#show-select").find(`:contains(${defaultShow})`).attr('id').subs
 // var barChart;
 
 var domainIndices;
+let showBarVar = 'average_av_rating';
 
 var rankedShows;
 var chartBrush;
@@ -44,13 +45,21 @@ $("#genre-select").val(defaultGenre);
 $("#genre-select")
 	.on("change", function() {
 		updateGenre();
-	})
+	});
 
 $("#show-select").val(defaultShow);
 $("#show-select")
 	.on("change", function() {
 		updateShow();
-	})
+	});
+
+
+$("input[name=showbar-var-select]:radio").bind( "change", function() {
+    showBarVar = $(this).val();
+    rankedShows.wrangleData();
+    chartBrush.wrangleData();
+});
+
 
 
 function updateShow() {
@@ -75,6 +84,7 @@ function updateGenre() {
 		var genreShowData = currentGenreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
 
 		genreShowBubblePlot.wrangleData(genreShowData);
+		rankedShows.wrangleData();
 	})
 }
 
@@ -98,10 +108,12 @@ Promise.all(promises).then(function(allData) {
 	genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
 	console.log(genreShowData);
 
-	rankedShows = new ShowBarChart('#ranked-show-bar-chart', [800, 700]);
+	rankedShows = new ShowBarChart('#ranked-show-bar-chart', [800, 500]);
 	chartBrush = new ChartBrush('#ranked-show-chartbrush', [800, 150]);
 
-	chartBrush.setBrush([35, 125]);
+	let midVal = Math.round(genreShowData.length / 2);
+
+	chartBrush.setBrush([Math.max(0, midVal - 45), Math.min(genreShowData.length, midVal + 45)]);
 
 	barChart = new BarChart('#episodes-bar-chart', [800, 700]);
 	boxPlot = new BoxPlot('#season-box-chart', [900, 300]);

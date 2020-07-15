@@ -31,7 +31,19 @@
     <div class="container">
     	<div class="row">
     		<div class="col-md-2"></div>
-    		<div class="col-md-8" id="ranked-show-bar-chart"></div>
+    		<div class="col-md-8">
+                <div class="row" style="text-align: center;">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                      <label class="btn btn-secondary bootstrap-button-toggle active" title="Average AV Club rating of all episodes of a series">
+                        <input type="radio" name="showbar-var-select" value="average_av_rating" id="avg_rating_button" autocomplete="off" checked>AV Club Grade
+                      </label>
+                      <label class="btn btn-secondary bootstrap-button-toggle" title="Average rating of a series relative to the average IMDB community score">
+                        <input type="radio" name="showbar-var-select" value="rating_difference" id="net_rating_button" autocomplete="off">Net Rating
+                      </label>
+                    </div>
+                </div>
+                <div class="row" id="ranked-show-bar-chart"></div>
+            </div>
     		<div class="col-md-2"></div>
     	</div>
         <div class="row">

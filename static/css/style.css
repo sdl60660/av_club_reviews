@@ -1,10 +1,24 @@
 
 
 text {
-  font: 10px sans-serif;
+    font: 10px sans-serif;
 }
 
-button{
-  font: 10px sans-serif;
-    
+button {
+    font: 10px sans-serif;
+}
+
+.btn, .btn {
+    /*background-color: rgba(15, 76, 129, 0.1);*/
+    min-width: 130px;
+    border: 1px solid black;
+}
+
+.btn.active, .btn:active {
+    background-color: rgba(15, 76, 129, 0.4);
+    font-weight: bold;
+}
+
+#ranked-show-bar-chart .y-axis text {
+    font-size: 10px !important;
 }

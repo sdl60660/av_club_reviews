@@ -31,13 +31,11 @@ ChartBrush.prototype.initVis = function() {
    		.range([vis.height, 0])
         .exponent(0.5);
 
-    vis.xAxisCall = d3.axisBottom()
-        .scale(vis.x);
+    vis.xAxisCall = d3.axisBottom();
 
     vis.xAxis = vis.g.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + vis.y(0) +")")
-        .call(vis.xAxisCall);
+        .attr("class", "x-axis x axis")
+        .attr("z-index", "2");
 
     vis.areaPath = vis.g.append("path")
         .attr("fill", "#ccc")
@@ -61,25 +59,53 @@ ChartBrush.prototype.wrangleData = function(){
     const vis = this;
 
 	vis.chartData = genreShowData.sort(function(a,b) {
-        return b.rating_difference - a.rating_difference;
+        return b[showBarVar] - a[showBarVar];
     });
 
 	vis.x.domain(vis.chartData.map(function(d) { return d.show_name }));
 
+	if (showBarVar === 'average_av_rating') {
+	    vis.y = d3.scalePow()
+            .domain([0, 100])
+            .range([vis.height, 0])
+            .exponent(2);
+    }
+    else {
+        vis.y = d3.scalePow()
+            .domain([-30, 30])
+            .range([vis.height, 0])
+            .exponent(0.5);
+    }
+
 	vis.updateVis();
 };
 
-ChartBrush.prototype.updateVis = function(){
+ChartBrush.prototype.updateVis = function() {
     const vis = this;
+
+    vis.xAxisCall
+        .scale(vis.x)
+        .tickValues([]);
 
     vis.area = d3.area()
         .x((d) => { return vis.x(d.show_name); })
         .y0(vis.y(0))
-        .y1((d) => { return vis.y(d.rating_difference); });
+        .y1((d) => { return vis.y(d[showBarVar]); });
 
-    vis.areaPath
+    vis.areaChart = vis.areaPath
         .datum(vis.chartData)
-        .attr("d", vis.area);
+        .attr("z-index", 1)
+        .transition()
+            .duration(500)
+            .attr("d", vis.area);
+
+    vis.xAxis
+        .transition()
+        .attr("transform", "translate(0," + vis.y(0) +")");
+
+    vis.xAxis
+        .call(vis.xAxisCall);
+
 };
 
 
