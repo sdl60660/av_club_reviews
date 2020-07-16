@@ -9,7 +9,7 @@ ChartBrush = function(_parentElement, _dimensions){
 ChartBrush.prototype.initVis = function() {
     var vis = this;
 
-    vis.margin = {top: 0, right: 75, bottom: 0, left: 85};
+    vis.margin = {top: 0, right: 75, bottom: 0, left: 65};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -20,6 +20,7 @@ ChartBrush.prototype.initVis = function() {
     vis.t = () => { return d3.transition().duration(1000); };
 
     vis.g = vis.svg.append("g")
+        // .attr("id", "chartbrush-innerbox")
         .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
 
     vis.x = d3.scalePoint()

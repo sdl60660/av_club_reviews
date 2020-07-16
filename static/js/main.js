@@ -123,7 +123,7 @@ Promise.all(promises).then(function(allData) {
 	console.log(genreShowData);
 
 	rankedShows = new ShowBarChart('#ranked-show-bar-chart', [800, 500]);
-	chartBrush = new ChartBrush('#ranked-show-chartbrush', [800, 150]);
+	chartBrush = new ChartBrush('#ranked-show-chartbrush', [800, 100]);
 
 	let midVal = Math.round(genreShowData.length / 2);
 

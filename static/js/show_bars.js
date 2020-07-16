@@ -10,7 +10,7 @@ ShowBarChart.prototype.initVis = function() {
 	const vis = this;
 
 	// set the dimensions and margins of the chart
-    vis.margin = {top: 50, right: 75, bottom: 50, left: 85};
+    vis.margin = {top: 50, right: 75, bottom: 50, left: 75};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 

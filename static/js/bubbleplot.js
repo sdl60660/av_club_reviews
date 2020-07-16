@@ -6,7 +6,7 @@ BubblePlot = function(_parentElement, _chartData, _dimensions) {
     this.dimensions = _dimensions;
 
     this.initVis();
-}
+};
 
 
 BubblePlot.prototype.initVis = function() {
