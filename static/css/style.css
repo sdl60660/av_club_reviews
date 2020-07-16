@@ -29,6 +29,16 @@ button {
     margin-top: 20px;
 }
 
+#section-select .btn {
+    height: 45px;
+    /*vertical-align: middle;*/
+    padding: 10px;
+}
+
+/*.chosen-single {*/
+    /*height: 40px;*/
+/*}*/
+
 #ranked-show-bar-chart .y-axis text {
     font-size: 10px !important;
 }

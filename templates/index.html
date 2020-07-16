@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="static/css/jquery-ui.structure.min.css">
     <link rel="stylesheet" href="static/css/jquery-ui.theme.min.css">
     <link rel="stylesheet" href="static/css/d3-tip.css">
+    <link rel="stylesheet" href="/static/bower_components/chosen/chosen.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="static/css/style.css">                               
 </head>
@@ -26,7 +27,7 @@
         <div class="col-md-1"></div>
         <div class="col-md-10" style="text-align: center;">
             <h1>
-                This is a title for the project
+                AV Club Reviews
             </h1>
             <br>
             <p>
@@ -111,7 +112,7 @@
                 </br>
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
-                    <select id="show-select" class="form-control"></select>
+                    <select id="show-select" class="chosen-select form-control"></select>
                 </div>
                 <div class="col-md-4"></div>
             </div>
@@ -144,7 +145,7 @@
                 <div class="row">
                     <div class="col-md-9"></div>
                     <div class="col-md-3">
-                        <select id="genre-select" class="form-control">
+                        <select id="genre-select" class="chosen-select form-control">
                             <option class="genre-option" id="genre-all" value="all">All</option>
                         </select>
                     </div>
@@ -218,15 +219,19 @@
     </div>
 
     <script>
-  		var showIDs = {{ show_ids | safe }};
-  		var genreNames = {{ genre_names | safe }};
+  		let showIDs = {{ show_ids | safe }};
+  		let genreNames = {{ genre_names | safe }};
+
   		showIDs.forEach(function(show) {
-    		$("#show-select").append(`<option class="show-option" id="show-${show.id}" value="${show.show_name}">${show.show_name}</option>`)
+    		    $("#show-select").append(`<option class="show-option" id="show-${show.id}" value="${show.show_name}">${show.show_name}</option>`)
   			});
 
   		genreNames.forEach(function(genre) {
-    		$("#genre-select").append(`<option class="genre-option" id="genre-${genre}" value="${genre.toLowerCase()}">${genre}</option>`)
+    		    $("#genre-select").append(`<option class="genre-option" id="genre-${genre}" value="${genre.toLowerCase()}">${genre}</option>`)
   			});
+
+  		{#$(".chosen-select").chosen();#}
+
 
 	  // document.getElementById('candidate-select-box').addEventListener('input', function () {
 	  //    if (rawCandidateList.includes($(this).val())) {
@@ -244,6 +249,7 @@
 	<script src="static/js/jquery-ui.min.js"></script>
 	<script src="static/js/d3.min.js"></script>
 	<script src="static/js/d3-tip.js"></script>
+    <script src="static/bower_components/chosen/chosen.jquery.min.js"></script>
 
 	<!-- Custom JS -->
 	<script src="static/js/utils.js"></script>

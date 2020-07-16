@@ -122,7 +122,7 @@ Promise.all(promises).then(function(allData) {
 	chartBrush.setBrush([Math.max(0, midVal - 45), Math.min(genreShowData.length, midVal + 45)]);
 
 	barChart = new BarChart('#episodes-bar-chart', [800, 700]);
-	boxPlot = new BoxPlot('#season-box-chart', [900, 300]);
+	boxPlot = new BoxPlot('#season-box-chart', [800, 300]);
 	// seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
 	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500])
@@ -132,6 +132,12 @@ Promise.all(promises).then(function(allData) {
 
 	reviewerBiasPlot = new ReviewerChart("#reviewer-bias-plot", [800, 500]);
 
+	$(".chosen-select").chosen();
+	$("#show_select_chosen, #genre_select_chosen")
+		.removeAttr("style")
+		.css("width", "100%");
+		// .css("font-size", "14pt")
+		// .css("font-family", "Helvetica");
 });
 
 
