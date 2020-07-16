@@ -12,4 +12,4 @@ Used:
 * Flask for web server/interaction between page and Postgres database
 * Heroku for hosting
 
-In-progress project site lives here: https://av-club.herokuapp.com/
+In-progress project site lives here: https://bit.ly/av-club-reviews
