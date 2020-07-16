@@ -144,10 +144,6 @@ ChartBrush.prototype.brushed = function() {
     const eachStep = chartBrush.x.step();
 	const selection = d3.event.selection || chartBrush.x.range();
 
-	console.log(selection);
-	console.log(chartBrush.x.step());
-	console.log(Math.round(selection[0] / eachStep), Math.ceil(selection[1] + 0.01 / eachStep));
-
 	domainIndices = [Math.round(selection[0] / eachStep), Math.ceil(0.01 + (selection[1] / eachStep))];
 
 	d3.select(this).call(chartBrush.brushHandle, selection);

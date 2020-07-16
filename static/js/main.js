@@ -98,7 +98,6 @@ function updateGenre(element) {
 		chartBrush.wrangleData();
 
 		let midVal = Math.round(genreShowData.length / 2);
-		console.log([Math.max(0, midVal - 45), Math.min(genreShowData.length - 1, midVal + 45)]);
 		chartBrush.setBrush([Math.max(0, midVal - 45), Math.min(genreShowData.length - 1, midVal + 45)]);
 	})
 }

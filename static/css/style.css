@@ -38,6 +38,11 @@ button {
     font-size: 12pt;
 }
 
+#show-genre-select-wrapper .fstdiv {
+    width: 85%;
+    margin: auto;
+}
+
 /*.chosen-single {*/
     /*height: 40px;*/
 /*}*/
