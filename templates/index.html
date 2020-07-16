@@ -24,18 +24,30 @@
     <div class="spacer"></div>
 
     <div class="container">
-        <div class="col-md-1"></div>
-        <div class="col-md-10" style="text-align: center;">
+        <div class="col-md-2"></div>
+        <div class="col-md-8" style="text-align: center;">
             <h1>
                 AV Club Reviews
             </h1>
-            <br>
-            <p>
-                This is some text that will go above everything explaining the project. Some more filler text to see the
-                full width of this section.
-            </p>
+            <div class="spacer"></div>
+            <div id="intro-text" style="text-align: left">
+                <p>
+                    The AV Club has published over 16,000 TV reviews since 2007, assigning each reviewed episode a letter grade (from A to F).
+                    What shows does AV Club like or dislike? Which do they like more than other reviewers? Do they like certain kinds of shows?
+                    Directors? Are some reviewers easier graders than others?
+                </p>
+                <p>
+                    I decided to try to find out by scraping the review data by their site. I matched it up with IMDB data, which
+                    had more informatino about directors, actors, air-dates and genre classifications, as well as community ratings
+                    to use as benchmarks.
+                </p>
+                <p>
+                    Below are some visualzations for exploring or analyzing AV Club Review data by show, episode, director, genre, or reviewer.
+                    I've included some findings at the top of each ssection as well
+                </p>
+            </div>
         </div>
-        <div class="col-md-1"></div>
+        <div class="col-md-2"></div>
     </div>
 
     <div class="spacer"></div>
@@ -66,27 +78,39 @@
     <div class="container" style="margin-top: 20px">
         <div id="shows-wrapper" class="section-wrapper" style="display: block">
             <div class="row section-text">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
                     <p>
                         Here's an explanation paragraph filler
                     </p>
                 </div>
-                <div class="col-md-2"></div>
+                <div class="col-md-3"></div>
             </div>
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
+
                     <div class="row" style="text-align: center;">
-                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                          <label class="btn btn-secondary bootstrap-button-toggle active" title="Average AV Club rating of all episodes of a series">
-                            <input type="radio" name="showbar-var-select" value="average_av_rating" id="avg_rating_button" autocomplete="off" checked>AV Club Grade
-                          </label>
-                          <label class="btn btn-secondary bootstrap-button-toggle" title="Average rating of a series relative to the average IMDB community score">
-                            <input type="radio" name="showbar-var-select" value="rating_difference" id="net_rating_button" autocomplete="off">Net Rating
-                          </label>
+
+                        <div class="col-md-6">
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                              <label class="btn btn-secondary bootstrap-button-toggle active" title="Average AV Club rating of all episodes of a series">
+                                <input type="radio" name="showbar-var-select" value="average_av_rating" id="avg_rating_button" autocomplete="off" checked>AV Club Grade
+                              </label>
+                              <label class="btn btn-secondary bootstrap-button-toggle" title="Average rating of a series relative to the average IMDB community score">
+                                <input type="radio" name="showbar-var-select" value="rating_difference" id="net_rating_button" autocomplete="off">Net Rating
+                              </label>
+                            </div>
                         </div>
+
+                        <div class="col-md-6" style="text-align:center;">
+                            <select id="show-genre-select" class="fstdropdown-select form-control genre-select">
+                                <option class="genre-option" id="genre-all" value="all">All</option>
+                            </select>
+                        </div>
+
                     </div>
+
                     <div class="row" id="ranked-show-bar-chart"></div>
                 </div>
                 <div class="col-md-2"></div>
@@ -100,13 +124,13 @@
         </div>
         <div id="seasons-wrapper" class="section-wrapper" style="display: none">
             <div class="row section-text">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
                     <p>
                         Here's an explanation paragraph filler
                     </p>
                 </div>
-                <div class="col-md-2"></div>
+                <div class="col-md-3"></div>
             </div>
             <div class="row">
                 </br>
@@ -131,13 +155,13 @@
         </div>
         <div id="genres-wrapper" class="section-wrapper" style="display: none">
             <div class="row section-text">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
                     <p>
                         Here's an explanation paragraph filler
                     </p>
                 </div>
-                <div class="col-md-2"></div>
+                <div class="col-md-3"></div>
             </div>
             <div class="row">
                 </br>
@@ -145,7 +169,7 @@
                 <div class="row">
                     <div class="col-md-9"></div>
                     <div class="col-md-3">
-                        <select id="genre-select" class="fstdropdown-select form-control">
+                        <select id="genre-genre-select" class="fstdropdown-select form-control genre-select">
                             <option class="genre-option" id="genre-all" value="all">All</option>
                         </select>
                     </div>
@@ -161,31 +185,31 @@
 
         <div id="directors-wrapper" class="section-wrapper" style="display: none">
             <div class="row section-text">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
                     <p>
                         Here's an explanation paragraph filler
                     </p>
                 </div>
-                <div class="col-md-2"></div>
+                <div class="col-md-3"></div>
             </div>
             <div class="row">
                 </br>
                 <!-- <div class="col-md-4"></div> -->
-                <div class="col-md-12" style="text-align: center; margin-left: 10px" id="full-director-plot"></div>
+                <div class="col-md-12" style="text-align: center;" id="full-director-plot"></div>
                 <!-- <div class="col-md-2"></div> -->
             </div>
         </div>
 
         <div id="reviewers-wrapper" class="section-wrapper" style="display: none">
             <div class="row section-text">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
                     <p>
                         Here's an explanation paragraph filler
                     </p>
                 </div>
-                <div class="col-md-2"></div>
+                <div class="col-md-3"></div>
             </div>
             <div class="row">
                 </br>
@@ -227,7 +251,8 @@
   			});
 
   		genreNames.forEach(function(genre) {
-    		    $("#genre-select").append(`<option class="genre-option" id="genre-${genre}" value="${genre.toLowerCase()}">${genre}</option>`)
+    		    $("#show-genre-select").append(`<option class="genre-option" id="genre-${genre}" value="${genre.toLowerCase()}">${genre}</option>`)
+                $("#genre-genre-select").append(`<option class="genre-option" id="genre-${genre}" value="${genre.toLowerCase()}">${genre}</option>`)
   			});
 
   		{#$(".chosen-select").chosen();#}

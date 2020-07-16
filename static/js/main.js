@@ -1,7 +1,10 @@
 
 var currentShowData;
+var currentGenreData;
 var directorData;
+var genreData;
 var genreShowData;
+var genreMetaData;
 
 var reviewerBias;
 var rawReviewerScores;
@@ -41,10 +44,10 @@ var directorBubblePlot;
 var reviewerBiasPlot;
 
 
-$("#genre-select").val(defaultGenre);
-$("#genre-select")
+$(".genre-select").val(defaultGenre);
+$(".genre-select")
 	.on("change", function() {
-		updateGenre();
+		updateGenre(this);
 	});
 
 $("#show-select").val(defaultShow);
@@ -82,15 +85,21 @@ function updateShow() {
 	});
 }
 
-function updateGenre() {
-	var newGenre = $("#genre-select").val();
+function updateGenre(element) {
+	var newGenre = $(element).val();
 
 	$.get("/get_genre?genre_name=" + newGenre).then( response => {
-		currentGenreData= JSON.parse(response);
-		var genreShowData = currentGenreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
+		currentGenreData = JSON.parse(response);
+		genreShowData = currentGenreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
 
 		genreShowBubblePlot.wrangleData(genreShowData);
+
 		rankedShows.wrangleData();
+		chartBrush.wrangleData();
+
+		let midVal = Math.round(genreShowData.length / 2);
+		console.log([Math.max(0, midVal - 45), Math.min(genreShowData.length - 1, midVal + 45)]);
+		chartBrush.setBrush([Math.max(0, midVal - 45), Math.min(genreShowData.length - 1, midVal + 45)]);
 	})
 }
 
@@ -119,13 +128,13 @@ Promise.all(promises).then(function(allData) {
 
 	let midVal = Math.round(genreShowData.length / 2);
 
-	chartBrush.setBrush([Math.max(0, midVal - 45), Math.min(genreShowData.length, midVal + 45)]);
+	chartBrush.setBrush([Math.max(0, midVal - 45), Math.min(genreShowData.length - 1, midVal + 45)]);
 
 	barChart = new BarChart('#episodes-bar-chart', [800, 700]);
 	boxPlot = new BoxPlot('#season-box-chart', [800, 300]);
 	// seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 
-	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500])
+	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500]);
 	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [600,500]);
 	
 	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600]);

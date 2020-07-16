@@ -22,9 +22,8 @@ ChartBrush.prototype.initVis = function() {
     vis.g = vis.svg.append("g")
         .attr("transform", "translate(" + vis.margin.left + "," + vis.margin.top + ")");
 
-    vis.x = d3.scaleBand()
-   		.range([0, vis.width])
-   		.paddingInner(0.0);
+    vis.x = d3.scalePoint()
+   		.range([0, vis.width]);
 
    	vis.y = d3.scalePow()
    		.domain([-30, 30])
@@ -145,7 +144,11 @@ ChartBrush.prototype.brushed = function() {
     const eachStep = chartBrush.x.step();
 	const selection = d3.event.selection || chartBrush.x.range();
 
-	domainIndices = [Math.round(selection[0] / eachStep), Math.round(selection[1] / eachStep)];
+	console.log(selection);
+	console.log(chartBrush.x.step());
+	console.log(Math.round(selection[0] / eachStep), Math.ceil(selection[1] + 0.01 / eachStep));
+
+	domainIndices = [Math.round(selection[0] / eachStep), Math.ceil(0.01 + (selection[1] / eachStep))];
 
 	d3.select(this).call(chartBrush.brushHandle, selection);
 	rankedShows.wrangleData();

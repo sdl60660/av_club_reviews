@@ -298,7 +298,7 @@ BubblePlot.prototype.addBackgroundColoring = function() {
         .attr('y1', '0%')
         .attr('y2', '100%');
 
-    var colors = ['green','white','red']
+    const colors = ['green','white','red'];
     vis.grad.selectAll('stop')
         .data(colors)
         .enter()

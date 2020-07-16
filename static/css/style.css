@@ -16,6 +16,7 @@ button {
     /*background-color: rgba(15, 76, 129, 0.1);*/
     min-width: 150px;
     border: 1px solid black;
+    background-color: white;
 }
 
 .btn.active, .btn:active {
@@ -31,8 +32,10 @@ button {
 
 #section-select .btn {
     height: 45px;
+    min-width: 160px;
     /*vertical-align: middle;*/
     padding: 10px;
+    font-size: 12pt;
 }
 
 /*.chosen-single {*/
