@@ -1,4 +1,8 @@
 
+body {
+    /*font-family: 'Inconsolata', Monaco, "Lucida Console", Consolas, "Courier New", "Helvetica Neue";*/
+	background-color: #f9f9f9;
+}
 
 text {
     font: 10px sans-serif;
@@ -10,7 +14,7 @@ button {
 
 .btn, .btn {
     /*background-color: rgba(15, 76, 129, 0.1);*/
-    min-width: 130px;
+    min-width: 150px;
     border: 1px solid black;
 }
 
@@ -28,3 +32,26 @@ button {
 #ranked-show-bar-chart .y-axis text {
     font-size: 10px !important;
 }
+
+.section-text {
+    margin-bottom: 40px;
+
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.spacer {
+	height: 60px;
+}
+
+.footer {
+	margin-top: 40px;
+	margin-bottom: 60px;
+}
+
+.icon-img {
+	height: 13px;
+	width: 13px;
+	margin-bottom: 2px;
+}
+

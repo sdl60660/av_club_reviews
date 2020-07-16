@@ -9,7 +9,7 @@ ChartBrush = function(_parentElement, _dimensions){
 ChartBrush.prototype.initVis = function() {
     var vis = this;
 
-    vis.margin = {top: 0, right: 75, bottom: 20, left: 85};
+    vis.margin = {top: 0, right: 75, bottom: 0, left: 85};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
@@ -45,12 +45,34 @@ ChartBrush.prototype.initVis = function() {
     vis.brush = d3.brushX()
         .handleSize(10)
         .extent([[0, 0], [vis.width, vis.height]])
-        .on("brush end", brushed);
+        .on("start brush end", vis.brushed);
 
     // Append brush component
     vis.brushComponent = vis.g.append("g")
         .attr("class", "brush")
         .call(vis.brush);
+
+    vis.arc = d3.arc()
+        .innerRadius(0)
+        .outerRadius((vis.height - vis.margin.top - vis.margin.bottom) / 5)
+        .startAngle(0)
+        .endAngle((d, i) => i ? Math.PI : -Math.PI);
+
+    vis.brushHandle = (g, selection) => g
+        .selectAll(".handle--custom")
+        .data([{type: "w"}, {type: "e"}])
+        .join(
+            enter => enter.append("path")
+            .attr("class", "handle--custom")
+            .attr("fill", "#666")
+            .attr("fill-opacity", 0.8)
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1.5)
+            .attr("cursor", "ew-resize")
+            .attr("d", vis.arc)
+        )
+        .attr("display", selection === null ? "none" : null)
+        .attr("transform", selection === null ? null : (d, i) => `translate(${selection[i]},${(vis.height + vis.margin.top - vis.margin.bottom) / 2})`)
 
     vis.wrangleData();
 };
@@ -96,7 +118,7 @@ ChartBrush.prototype.updateVis = function() {
         .datum(vis.chartData)
         .attr("z-index", 1)
         .transition()
-            .duration(500)
+            .duration(800)
             .attr("d", vis.area);
 
     vis.xAxis
@@ -116,16 +138,17 @@ ChartBrush.prototype.setBrush = function(brushRange) {
 
     vis.brushComponent
         .call(vis.brush.move, [brushSteps[0], brushSteps[1]]);
-}
+};
 
 
-function brushed() {
-
+ChartBrush.prototype.brushed = function() {
     const eachStep = chartBrush.x.step();
 	const selection = d3.event.selection || chartBrush.x.range();
+	console.log(selection);
 
 	domainIndices = [Math.round(selection[0] / eachStep), Math.round(selection[1] / eachStep)];
 
+	d3.select(this).call(chartBrush.brushHandle, selection);
 	rankedShows.wrangleData();
 
 }

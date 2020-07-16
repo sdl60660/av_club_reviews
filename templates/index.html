@@ -20,6 +20,24 @@
 
 
 <body>
+    <div class="spacer"></div>
+
+    <div class="container">
+        <div class="col-md-1"></div>
+        <div class="col-md-10" style="text-align: center;">
+            <h1>
+                This is a title for the project
+            </h1>
+            <br>
+            <p>
+                This is some text that will go above everything explaining the project. Some more filler text to see the
+                full width of this section.
+            </p>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+
+    <div class="spacer"></div>
 
     <div id="section-select">
         <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -41,9 +59,20 @@
         </div>
     </div>
 
+    <div class="spacer"></div>
+
 	<!-- Bootstrap grid setup -->
     <div class="container" style="margin-top: 20px">
         <div id="shows-wrapper" class="section-wrapper" style="display: block">
+            <div class="row section-text">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <p>
+                        Here's an explanation paragraph filler
+                    </p>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
             <div class="row">
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
@@ -69,8 +98,16 @@
             </div>
         </div>
         <div id="seasons-wrapper" class="section-wrapper" style="display: none">
+            <div class="row section-text">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <p>
+                        Here's an explanation paragraph filler
+                    </p>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
             <div class="row">
-                <h2 style="text-align: center">Shows</h2>
                 </br>
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
@@ -92,8 +129,16 @@
             </div>
         </div>
         <div id="genres-wrapper" class="section-wrapper" style="display: none">
+            <div class="row section-text">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <p>
+                        Here's an explanation paragraph filler
+                    </p>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
             <div class="row">
-                <h2 style="text-align: center">Genres</h2>
                 </br>
 
                 <div class="row">
@@ -109,14 +154,21 @@
                     <div class="col-md-5" id="full-genre-plot"></div>
                     <div class="col-md-2"></div>
                     <div class="col-md-5" id="genre-show-plot"></div>
-                    </div>
                 </div>
             </div>
         </div>
 
         <div id="directors-wrapper" class="section-wrapper" style="display: none">
+            <div class="row section-text">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <p>
+                        Here's an explanation paragraph filler
+                    </p>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
             <div class="row">
-                <h2 style="text-align: center">Directors</h2>
                 </br>
                 <!-- <div class="col-md-4"></div> -->
                 <div class="col-md-12" style="text-align: center; margin-left: 10px" id="full-director-plot"></div>
@@ -125,13 +177,42 @@
         </div>
 
         <div id="reviewers-wrapper" class="section-wrapper" style="display: none">
+            <div class="row section-text">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <p>
+                        Here's an explanation paragraph filler
+                    </p>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
             <div class="row">
-                <h2 style="text-align: center">Reviewers</h2>
                 </br>
                 <!-- <div class="col-md-4"></div> -->
                 <div class="col-md-12" style="text-align: center; margin-left: 10px" id="reviewer-bias-plot"></div>
                 <!-- <div class="col-md-2"></div> -->
             </div>
+        </div>
+    </div>
+
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="container">
+        <div class="col-md-2"></div>
+        <div class="col-md-8"><hr></div>
+        <div class="col-md-2"></div>
+    </div>
+
+    <div class="container footer" style="text-align:justify; max-width: 650px; font-size: 9pt;">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <p>Visualization by Sam Learner | <a href="mailto:learnersd@gmail.com"><img class="icon-img" src="/static/images/email.svg"></a> | <a href="https://twitter.com/sam_learner"><img class="icon-img" src="/static/images/twitter.svg"></a> | <a href="https://github.com/sdl60660"><img class="icon-img" src="/static/images/github.png"></a></p>
+                <p>Code and data for this project lives <a href="https://github.com/sdl60660/nba_origins">here</a>.</p>
+                <p>All NBA player data scraped from <a href="www.basketball-reference.com">Basketball Reference</a>. State historical population data is from <a href="https://fred.stlouisfed.org/release/tables?rid=118&eid=259194">FRED</a> (Puerto Rico from <a href="https://www.worldometers.info/world-population/puerto-rico-population/">worldometers</a>). Country populations and population estimates from International Data Base (IDB) Division of the United States Census Bureau via <a href="https://en.wikipedia.org/wiki/List_of_countries_by_past_and_estimated_future_population">Wikipedia</a>. City population data from <a href="http://api.geonames.org/">geonames</a>. The US map projection that includes Puerto Rico came from <a href="https://observablehq.com/@jake-low/u-s-map-with-puerto-rico">Jake Low</a>. US State GeoJSON from <a href="https://eric.clst.org/tech/usgeojson/">Eric Celeste</a>, simplified to topoJSON using <a href="https://mapshaper.org/">mapshaper</a>. United States icon by Michael Thompson from the Noun Project, other icons from Font Awesome.</p>
+
+            </div>
+            <div class="col-md-2"></div>
         </div>
     </div>
 
