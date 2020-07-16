@@ -132,12 +132,6 @@ Promise.all(promises).then(function(allData) {
 
 	reviewerBiasPlot = new ReviewerChart("#reviewer-bias-plot", [800, 500]);
 
-	$(".chosen-select").chosen();
-	$("#show_select_chosen, #genre_select_chosen")
-		.removeAttr("style")
-		.css("width", "100%");
-		// .css("font-size", "14pt")
-		// .css("font-family", "Helvetica");
 });
 
 
