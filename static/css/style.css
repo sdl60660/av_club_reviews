@@ -48,6 +48,14 @@ button {
     margin: auto;
 }
 
+.fstdiv {
+    margin: auto;
+}
+
+.fstdropdown {
+    margin: auto;
+}
+
 #show-genre-select-wrapper .fstdiv {
     width: 85%;
 }

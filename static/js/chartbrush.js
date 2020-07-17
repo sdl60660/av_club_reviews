@@ -9,7 +9,7 @@ ChartBrush = function(_parentElement, _dimensions){
 ChartBrush.prototype.initVis = function() {
     var vis = this;
 
-    vis.margin = {top: 0, right: 75, bottom: 0, left: 65};
+    vis.margin = {top: 0, right: 90, bottom: 0, left: 60};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 

@@ -287,6 +287,13 @@ ShowBarChart.prototype.updateVis = function() {
                     .node();
         		vis.tip.show(d, target);
             })
+			.on("click", function(d) {
+				$("#show-select").val(d.show_name);
+				document.querySelector("#show-select").fstdropdown.rebind();
+				updateShow();
+
+				$("input[name=section-select]:radio")[1].click();
+			});
 
 	vis.yAxisCall
 		.scale(vis.y);
