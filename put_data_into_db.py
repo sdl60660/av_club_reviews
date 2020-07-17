@@ -152,6 +152,7 @@ cur.execute("DELETE FROM reviewers")
 cur.execute("DELETE FROM shows")
 
 # ====Reviewers====
+print('Reviewers')
 
 reviewers = {}
 
@@ -168,6 +169,7 @@ for reviewer in reviewers.values():
 # print(len(reviewers.keys()))
 
 # ====Shows====
+print('Shows')
 
 for show_data in data.values():
 	if len(show_data) == 0:
@@ -197,6 +199,7 @@ for show_data in data.values():
 
 
 # ====Episodes====
+print('Episodes')
 
 for show, show_data in data.items():
 	cur.execute("""SELECT id FROM shows WHERE show_name='%s'""" % show.replace("'", "''"))
@@ -227,7 +230,7 @@ for show, show_data in data.items():
 		# safe_insert_handling(cur, "INSERT INTO episodes (show_id, season_number, episode_number, episode_title) VALUES(%s, %s, %s, %s), (show_id, episode['season'], episode['episode'], episode_title))
 
 # ====Reviews====
-
+print('Reviews')
 
 reviews = []
 for show, show_data in data.items():

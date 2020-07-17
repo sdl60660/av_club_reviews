@@ -98,7 +98,9 @@ ShowBarChart.prototype.initVis = function() {
         .text("Avg. AV Club Score");
 
 
-    vis.tip = d3.tip().attr('class', 'd3-tip')
+    vis.tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([0, 8])
         .html(function(d) {
             var text = "<span style='color:white'><strong>Show</strong>: " + d.show_name + "</span></br>";
 
