@@ -136,7 +136,7 @@ with open('data/full_data.json', 'r') as f:
 	data = json.load(f)
 
 # Connect to Database
-local_db = True
+local_db = False
 
 if local_db:
 	from data.local_db_options import db_options
@@ -145,6 +145,11 @@ else:
 
 conn = psycopg2.connect(host=db_options['hostname'], port=db_options['port'], database=db_options['database'], user=db_options['username'], password=db_options['password'])
 cur = conn.cursor()
+
+cur.execute("DELETE FROM reviews")
+cur.execute("DELETE FROM episodes")
+cur.execute("DELETE FROM reviewers")
+cur.execute("DELETE FROM shows")
 
 # ====Reviewers====
 

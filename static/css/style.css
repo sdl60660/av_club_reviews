@@ -38,9 +38,18 @@ button {
     font-size: 12pt;
 }
 
+#section-select .btn label {
+    position: absolute;
+    top: 50%;
+}
+
+.fstdiv .fstselected {
+    text-align: center;
+    margin: auto;
+}
+
 #show-genre-select-wrapper .fstdiv {
     width: 85%;
-    margin: auto;
 }
 
 /*.chosen-single {*/
