@@ -119,7 +119,10 @@ Promise.all(promises).then(function(allData) {
 	rawReviewerScores = allData[5];
 
 	genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
-	console.log(genreShowData);
+	// console.log(genreShowData);
+
+	$(".loadring-container")
+		.hide();
 
 	rankedShows = new ShowBarChart('#ranked-show-bar-chart', [800, 500]);
 	chartBrush = new ChartBrush('#ranked-show-chartbrush', [800, 100]);

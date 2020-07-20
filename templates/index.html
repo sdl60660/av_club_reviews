@@ -59,7 +59,7 @@
                     to use as benchmarks.
                 </p>
                 <p>
-                    Below are some visualizations for exploring or analyzing AV Club Review data by show, episode, director, genre, or reviewer.
+                    <strong>Below are some visualizations for exploring or analyzing AV Club Review data by show, episode, director, genre, or reviewer.</strong>
                 </p>
             </div>
         </div>
@@ -115,7 +115,7 @@
 
                     <div class="row">
 
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-sm-6">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                               <label class="btn btn-secondary bootstrap-button-toggle active" title="Average AV Club rating of all episodes of a series">
                                 <input type="radio" name="showbar-var-select" value="average_av_rating" id="avg_rating_button" autocomplete="off" checked>AV Club Grade
@@ -126,14 +126,16 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6" id="show-genre-select-wrapper" style="text-align:right;">
+                        <div class="col-md-6 col-sm-6" id="show-genre-select-wrapper" style="text-align:right;">
                             <select id="show-genre-select" class="fstdropdown-select form-control genre-select">
                                 <option class="genre-option" id="genre-all" value="all">All</option>
                             </select>
                         </div>
 
                     </div>
-
+                    <div class="loadring-container" style="text-align: center">
+                        <div class="lds-ring" style="margin-top: 13vh;"><div></div><div></div><div></div><div></div></div>
+                    </div>
                     <div class="row" id="ranked-show-bar-chart"></div>
                 </div>
                 <div class="col-md-2"></div>
