@@ -56,6 +56,10 @@ button {
     margin: auto;
 }
 
+.fstlist div {
+    text-align: center;
+}
+
 #show-genre-select-wrapper .fstdiv {
     width: 85%;
 }
