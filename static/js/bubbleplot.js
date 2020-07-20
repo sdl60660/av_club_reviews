@@ -10,25 +10,25 @@ BubblePlot = function(_parentElement, _chartData, _dimensions) {
 
 
 BubblePlot.prototype.initVis = function() {
-    var vis = this;
+    const vis = this;
 
     // set the dimensions and margins of the graph
     vis.margin = {top: 30, right: 80, bottom: 40, left: 70};
-    vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right,
+    vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
     // append the svg object to the body of the page
     vis.svg = d3.select(vis.parentElement)
       .append("svg")
         .attr("width", vis.width + vis.margin.left + vis.margin.right)
-        .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
+        .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
     
     vis.g = vis.svg.append("g")
         .attr("transform",
               "translate(" + vis.margin.left + "," + vis.margin.top + ")");
 
 
-    var chartScaleExponent = 2.0;
+    const chartScaleExponent = 2.0;
     // Add X axis
     vis.x = d3.scalePow()
         .domain([ 0, 100 ])
@@ -42,7 +42,7 @@ BubblePlot.prototype.initVis = function() {
 
     vis.tip = d3.tip().attr('class', 'd3-tip')
         .html(function(d) {
-            var text = "<span style='color:white'>" + d.category_value.replace('_', ' ') + "</span></br></br>"
+            let text = "<span style='color:white'>" + d.category_value.replace('_', ' ') + "</span></br></br>"
 
             text +=  "<span style='color:white'>Avg. AV Club Rating: " + d3.format('.1f')(d.average_av_rating) + "/100</span></br>";
             text +=  "<span style='color:white'>Avg. IMDB Rating: " + d3.format('.1f')(d.average_imdb_rating) + "/100</span></br></br>";
@@ -50,7 +50,8 @@ BubblePlot.prototype.initVis = function() {
             text += "<span style='color:white'>Num. Reviews: " + d.reviewed_episode_count + "</span></br>";
 
             return text;
-    })
+    });
+
     vis.g.call(vis.tip);
 
     vis.reverseGradeTranslate = d3.scaleQuantize()
@@ -102,30 +103,29 @@ BubblePlot.prototype.initVis = function() {
         .attr("text-anchor", "end")
         .style("font-size", "13px")
         .attr("transform", "rotate(-90)")
-        .text("Avg. AV Club Review")
+        .text("Avg. AV Club Review");
 
     vis.addBackgroundColoring();
     vis.wrangleData(vis.chartData);
-}
+};
 
 
 BubblePlot.prototype.wrangleData = function(_chartData) {
-    var vis = this;
+    const vis = this;
     vis.chartData = _chartData;
 
     vis.chartData.forEach(function(d) {
-        if(d.season_number == undefined) {
+        if(d.season_number === undefined) {
             d['season_number'] = d.category_value;
         }
-    })
+    });
 
     vis.updateVis();
-
-}
+};
 
 
 BubblePlot.prototype.updateVis = function() {
-    var vis = this;
+    const vis = this;
 
     vis.defaultOpacity = 0.7;
     vis.chartData.sort((a, b) => (a.reviewed_episode_count < b.reviewed_episode_count) ? 1 : -1)
@@ -144,7 +144,7 @@ BubblePlot.prototype.updateVis = function() {
     vis.circles = vis.g.selectAll("circle")
         .data(vis.chartData, function(d) {
             return d.unique_id;
-        })
+        });
 
     // EXIT old elements not present in new data
     vis.circles
@@ -171,10 +171,18 @@ BubblePlot.prototype.updateVis = function() {
             .on("mouseout", function(d) {
                 mouseout(d);
             })
+            .on("click", function (d) {
+                if (vis.parentElement === '#full-genre-plot') {
+                    $("#genre-genre-select").val(d.unique_id.replace('_', '-'));
+				    document.querySelector("#genre-genre-select").fstdropdown.rebind();
+				    updateGenre(d.unique_id);
+                }
+            })
             .transition()
                 .delay(showChartsTransitionOutDuration + 50)
                 .duration(showChartsTransitionInDuration)
                 .attr("r", function (d) { return vis.z(d.reviewed_episode_count); } )
+
 
     function mouseover(data, object) {
         vis.tip.show(data);
@@ -199,18 +207,20 @@ BubblePlot.prototype.updateVis = function() {
     }
 
     vis.svg.select(".legend-group").remove();
-    vis.attachCircleSizeLegend();
 
-}
+    if (vis.chartData.length > 1) {
+        vis.attachCircleSizeLegend();
+    }
+};
 
 
 BubblePlot.prototype.attachCircleSizeLegend = function() {
-    var vis = this;
+    const vis = this;
 
     // I'll find the inverse for these values then find the closest round number to use for the actual
     // radius values that will be entered into the z scale later
-    var approximateRadiusValues = [ 3, 10, 15 ];
-    var sampleValues = [];
+    let approximateRadiusValues = [ 3, 10, 15 ];
+    let sampleValues = [];
 
     approximateRadiusValues.forEach(function(d) {
             var roundedInverse = Math.round(vis.z.invert(d));
@@ -219,7 +229,7 @@ BubblePlot.prototype.attachCircleSizeLegend = function() {
             var roundedValue = divisor * Math.round(roundedInverse / divisor);
 
             sampleValues.push(roundedValue);
-    })
+    });
 
     var topSampleY;
 
@@ -276,7 +286,7 @@ BubblePlot.prototype.attachCircleSizeLegend = function() {
 
         topSampleY = yCoordinate - radius;
 
-    })
+    });
 
     vis.legendGroup.append("text")
         .attr("y", topSampleY - 10)
@@ -285,14 +295,16 @@ BubblePlot.prototype.attachCircleSizeLegend = function() {
         .attr("text-decoration", "underline")
         .style("font-size", "10px")
         .text("Num. Reviews")
-}
+};
 
 BubblePlot.prototype.addBackgroundColoring = function() {
-    var vis = this;
+    const vis = this;
+
+    Math.random();
 
     vis.grad = vis.svg.append('defs')
         .append('linearGradient')
-        .attr('id', 'grad')
+        .attr('id', `grad-${vis.parentElement.replace('#', '')}`)
         .attr('x1', '0%')
         .attr('x2', '100%')
         .attr('y1', '0%')
@@ -303,33 +315,32 @@ BubblePlot.prototype.addBackgroundColoring = function() {
         .data(colors)
         .enter()
         .append('stop')
-        .style('stop-color', function(d){ return d; })
-        .attr('offset', function(d,i){
+        .style('stop-color', function(d) { return d; })
+        .attr('offset', function(d,i) {
             return 100 * (i / (colors.length - 1)) + '%';
         });
 
-    vis.g.append("rect")
+    vis.shadedRect = vis.g.append("rect")
         .attr("x", 0)
         .attr("width", vis.width)
         .attr("y", 0)
         .attr("height", vis.height)
-        .attr("fill", 'url(#grad)')
+        .attr("fill", `url(#grad-${vis.parentElement.replace("#", "")})`)
         .attr("fill-opacity", 0.25);
 
-
-    vis.rightCornerText = vis.g.append("g")
+    vis.rightCornerText = vis.g.append("g");
     vis.rightCornerText.append("text")
         .attr("x", vis.width - 70)
         .attr("y", vis.height - 30)
         .attr("width", 30)
         .attr("text-anchor", "middle")
-        .text("AV Club Score Is Worse")
+        .text("AV Club Score Is Worse");
     vis.rightCornerText.append("text")
         .attr("x", vis.width - 70)
         .attr("y", vis.height - 20)
         .attr("width", 30)
         .attr("text-anchor", "middle")
-        .text("Relative to IMDB Rating")
+        .text("Relative to IMDB Rating");
 
     vis.leftCornerText = vis.g.append("g")
     vis.leftCornerText.append("text")
@@ -345,5 +356,5 @@ BubblePlot.prototype.addBackgroundColoring = function() {
         .attr("text-anchor", "middle")
         .text("Relative to IMDB Rating")
 
-}
+};
 

@@ -58,7 +58,7 @@ ShowBarChart.prototype.initVis = function() {
         .attr("y", vis.height + 20)
         .attr("text-anchor", "middle")
         .style("font-size", "13px")
-        .text("Reviewers")
+        .text("Shows")
 
     vis.weightedBiasTip = d3.tip()
     	.attr("class", "d3-tip")

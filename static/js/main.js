@@ -47,7 +47,7 @@ var reviewerBiasPlot;
 $(".genre-select").val(defaultGenre);
 $(".genre-select")
 	.on("change", function() {
-		updateGenre(this);
+		updateGenre($(this).val());
 	});
 
 $("#show-select").val(defaultShow);
@@ -85,8 +85,7 @@ function updateShow() {
 	});
 }
 
-function updateGenre(element) {
-	var newGenre = $(element).val();
+function updateGenre(newGenre) {
 
 	$.get("/get_genre?genre_name=" + newGenre).then( response => {
 		currentGenreData = JSON.parse(response);
@@ -136,7 +135,7 @@ Promise.all(promises).then(function(allData) {
 	genreFullBubblePlot = new BubblePlot("#full-genre-plot", genreMetaData, [600,500]);
 	genreShowBubblePlot = new BubblePlot("#genre-show-plot", genreShowData, [600,500]);
 	
-	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800, 600]);
+	directorBubblePlot = new BubblePlot("#full-director-plot", directorData, [800,600]);
 
 	reviewerBiasPlot = new ReviewerChart("#reviewer-bias-plot", [800, 500]);
 
