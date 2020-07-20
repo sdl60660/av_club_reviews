@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from database import Database, CursorFromConnectionFromPool
+from classes.database import Database, CursorFromConnectionFromPool
 from psycopg2.extensions import AsIs
 from urllib.parse import urlparse
 

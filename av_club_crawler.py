@@ -6,7 +6,7 @@ import json
 import re
 from pprint import pprint
 
-from crawler import Crawler
+from classes.crawler import Crawler
 
 
 def get_review_links(show):
