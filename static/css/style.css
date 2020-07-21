@@ -72,6 +72,15 @@ button {
     font-size: 10px !important;
 }
 
+#chartbrush-box {
+    border: 1px solid black;
+    /*padding: 8px;*/
+    border-radius: 5px;
+
+    padding-top: 2px;
+    padding-bottom: 5px
+}
+
 
 /*#ranked-show-chartbrush {*/
     /*border: 1px solid black;*/

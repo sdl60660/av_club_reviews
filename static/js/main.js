@@ -125,7 +125,7 @@ Promise.all(promises).then(function(allData) {
 		.hide();
 
 	rankedShows = new ShowBarChart('#ranked-show-bar-chart', [800, 500]);
-	chartBrush = new ChartBrush('#ranked-show-chartbrush', [800, 100]);
+	chartBrush = new ChartBrush('#ranked-show-chartbrush', [400, 80]);
 
 	let midVal = Math.round(genreShowData.length / 2);
 

@@ -9,11 +9,12 @@ ChartBrush = function(_parentElement, _dimensions){
 ChartBrush.prototype.initVis = function() {
     var vis = this;
 
-    vis.margin = {top: 0, right: 90, bottom: 0, left: 60};
+    vis.margin = {top: 5, right: 20, bottom: 5, left: 20};
     vis.width = vis.dimensions[0] - vis.margin.left - vis.margin.right;
     vis.height = vis.dimensions[1] - vis.margin.top - vis.margin.bottom;
 
     vis.svg = d3.select(vis.parentElement).append("svg")
+        .attr("id", "chartbrush-box")
         .attr("width", vis.width + vis.margin.left + vis.margin.right)
         .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
 
