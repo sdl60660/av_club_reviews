@@ -131,7 +131,7 @@ Promise.all(promises).then(function(allData) {
 
 	chartBrush.setBrush([Math.max(0, midVal - 45), Math.min(genreShowData.length - 1, midVal + 45)]);
 
-	barChart = new BarChart('#episodes-bar-chart', [800, 700]);
+	barChart = new BarChart('#episodes-bar-chart', [700, 600]);
 	boxPlot = new BoxPlot('#season-box-chart', [800, 300]);
 	// seasonBubblePlot = new BubblePlot("#ratings-plot", currentShowData.episodes, [500,330], false);
 

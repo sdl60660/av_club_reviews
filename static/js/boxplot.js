@@ -81,14 +81,14 @@ BoxPlot.prototype.initVis = function() {
     	.attr("x", 0)
     	.attr("y", 10)
     	.attr("text-anchor", "start")
-    	.style("font-size", "13px")
+    	.style("font-size", "12px")
     	.text("⟵ IMDB Community Score is Higher")
 
     vis.g.append("text")
     	.attr("x", vis.width)
     	.attr("y", 10)
     	.attr("text-anchor", "end")
-    	.style("font-size", "13px")
+    	.style("font-size", "12px")
     	.text("AV Club Score is Higher ⟶")
 
     vis.tip = d3.tip().attr('class', 'd3-tip')
