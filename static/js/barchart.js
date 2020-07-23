@@ -260,7 +260,9 @@ BarChart.prototype.addOverlays = function() {
                 mousemove(d);
             })
             .on("click", function() {
-                window.open(d.review_link, '_blank');
+                if (phoneBrowsing === false) {
+                    window.open(d.review_link, '_blank');
+                }
             })
     })
 
