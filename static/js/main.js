@@ -43,6 +43,11 @@ var directorBubblePlot;
 
 var reviewerBiasPlot;
 
+let phoneBrowsing = false;
+
+// Min width that browser window must be before switching to phoneBrowsing mode (even on Desktop, it will display everything as if on Mobile)
+const phoneBrowsingCutoff = 1100;
+
 
 $(".genre-select").val(defaultGenre);
 $(".genre-select")
@@ -68,6 +73,38 @@ $("input[name=showbar-var-select]:radio").bind( "change", function() {
     rankedShows.wrangleData();
     chartBrush.wrangleData();
 });
+
+
+function determinePhoneBrowsing() {
+    // Determine if the user is browsing on mobile based on browser window width or browser type
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < phoneBrowsingCutoff) {
+        phoneBrowsing = true;
+    }
+
+    //
+    if (phoneBrowsing === true) {
+        $(".step")
+            .css("font-size", "18pt");
+
+        $(".step .body")
+            .css("font-size", "18pt");
+    }
+
+    // On mobile, fade non-current annotation slides to 0, because they are all fixed at the top and overlapping
+    // On desktop keep them visible, but low opacity
+    if (phoneBrowsing === true) {
+        hiddenOpacity = 0.0;
+    }
+    else {
+        hiddenOpacity = 0.2;
+    }
+
+    // If mobile, and annotations are up top, adjust top-padding on viz-tiles to make room for fixed-position annotation
+    if (phoneBrowsing === true) {
+        // setDynamicPadding('#sunburst-tile', 1, 7);       // Keep this, but populate with correct element ID and indices
+        // setDynamicPadding('#flowchart-tile', 8, 13);     // Keep this, but populate with correct element ID and indices
+    }
+}
 
 
 
@@ -117,6 +154,8 @@ Promise.all(promises).then(function(allData) {
 	genreMetaData = allData[3];
 	reviewerBias = allData[4];
 	rawReviewerScores = allData[5];
+
+	determinePhoneBrowsing();
 
 	genreShowData = genreData.show_data.filter( d => d.reviewed_episode_count >= episodeThreshold );
 	// console.log(genreShowData);
