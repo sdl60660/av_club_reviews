@@ -56,7 +56,7 @@ app = Flask(__name__)
 app.secret_key = SECRET_KEY
 
 FROM_DOMAIN = "av-club.herokuapp.com"
-TO_DOMAIN = "av-club.samlearner.com"
+TO_DOMAIN = "http://av-club.samlearner.com"
 
 @app.before_request
 def redirect_to_new_domain():
